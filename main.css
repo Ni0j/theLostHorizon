@@ -1,0 +1,71 @@
+@font-face {
+    font-family: 'YourFontName';
+    src: url('./PPNeueMachina-InktrapLight.otf') format('opentype');
+}
+
+body {
+    background-color: black;
+    color: white;
+    font-family: 'PPNeueMachina-InktrapLight.', monospace;
+    font-size: 16px;
+}
+
+.terminal {
+    padding: 1vw;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.terminal-content {
+    line-height: 1.5;
+    font-size: 0.75rem;
+}
+
+.terminal-line {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    white-space: pre-wrap;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+a {
+  color: white;;
+}
+
+.vscode-container {
+    border: 1px solid #fff;
+    background-color: #0d1117;
+    border-radius: 6px;
+    width: 20%;
+    max-width: 300px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.title-bar {
+    background-color: #161b22;
+    padding: 8px 16px;
+    border-bottom: 1px solid #fff;
+    border-radius: 6px 6px 0 0;
+}
+
+.title-text {
+    color: #c9d1d9;
+    font-family: monospace;
+}
+
+.editor-content {
+    padding: 16px;
+    min-height: 100px;
+}
+
+.code-text {
+    color: #c9d1d9;
+    font-family: monospace;
+    font-size: 1.1em;
+}
