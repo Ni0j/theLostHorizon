@@ -20,118 +20,6 @@ async function initWebcamWithEffects() {
         return currentAsciiChars[index];
     }
 
-    // Remove existing button if any
-    const existingButton = document.querySelector('.button');
-    if (existingButton) {
-        existingButton.remove();
-    }
-
-    // First, create the input form before starting the webcam effect
-    function createInputForm() {
-        // Check if we have a valid stored timestamp
-        const lastVerifiedTime = localStorage.getItem('lastVerifiedTime');
-        if (lastVerifiedTime) {
-            const timeDiff = Date.now() - parseInt(lastVerifiedTime);
-            const fifteenMinutes = 15 * 60 * 1000; // 15 minutes in milliseconds
-            
-            if (timeDiff < fifteenMinutes) {
-                // Skip password verification if within 15 minutes
-                return Promise.resolve('27182');
-            }
-        }
-
-        const formContainer = document.createElement('div');
-        formContainer.style.cssText = `
-            position: fixed;
-            top: 80%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: black;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            text-align: center;
-            z-index: 1000;
-        `;
-
-        const title = document.createElement('p');
-        title.textContent = 'Identity verification required';
-        title.style.fontSize = '1rem';
-        title.style.marginBottom = '1rem';
-        title.style.fontFamily = 'PPNeueMachina-InktrapLight';
-
-        const input = document.createElement('input');
-        input.type = 'password';
-        input.placeholder = 'Enter password';
-        input.style.cssText = `
-            padding: 8px;
-            margin-right: 10px;
-            border: 1px solid #8b8b8b;
-            font-size: 16px;
-            background: #000000;
-            color: #8b8b8b;
-        `;
-
-        const button = document.createElement('button');
-        button.textContent = 'verify';
-        button.style.cssText = `
-            padding: 8px 20px;
-            background: #000000;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;        
-            font-family:'PPNeueMachina-InktrapLight';
-        `;
-        button.onmouseover = () => button.style.backgroundColor = '#8b8b8b';
-        button.onmouseout = () => button.style.backgroundColor = '#000000';
-
-        formContainer.appendChild(title);
-        formContainer.appendChild(input);
-        formContainer.appendChild(button);
-        document.body.appendChild(formContainer);
-
-        // Return a promise that resolves when the user submits the form
-        return new Promise((resolve) => {
-            const verifyPassword = () => {
-                if (input.value === '27182') {
-                    localStorage.setItem('lastVerifiedTime', Date.now().toString());
-                    formContainer.remove();
-                    resolve(input.value);
-                }
-            };
-
-            button.onclick = verifyPassword;
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    verifyPassword();
-                }
-            });
-        });
-    }
-
-    // Get user's birthdate
-    const birthdate = await createInputForm();
-
-    // Create puzzle game button after verification
-    const startButton = document.createElement('img');
-    startButton.src = './img/button.png';
-    startButton.alt = 'button';
-    startButton.className = 'button';
-    startButton.style.cssText = `
-        position: fixed;
-        left: 50%;
-        top: 20px;
-        transform: translateX(-50%);
-        cursor: pointer;
-    `;
-
-    // Add puzzle game functionality
-    startButton.addEventListener('click', createPuzzleGame);
-
-    // Add button to document
-    document.body.appendChild(startButton);
-
     // Create window container for webcam
     const windowContainer = document.createElement('div');
     windowContainer.style.cssText = `
@@ -143,7 +31,7 @@ async function initWebcamWithEffects() {
         background: #000000;
         border: 1px solid #8b8b8b;
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        z-index: 999;
+        z-index: 1000;
     `;
 
     // Create title bar for webcam window
@@ -159,18 +47,11 @@ async function initWebcamWithEffects() {
         cursor: move;
         user-select: none;
     `;
-    
-    // Create title container
-    const titleContainer = document.createElement('div');
-    titleContainer.style.cssText = `
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    `;
-    
-    // Add title to title container
-    titleContainer.appendChild(document.createElement('span')).textContent = 'ε';
-    titleBar.appendChild(titleContainer);
+
+    // Add title
+    const title = document.createElement('span');
+    title.textContent = 'the ot[H]er side';
+    titleBar.appendChild(title);
 
     // Add window controls
     const controls = document.createElement('div');
@@ -180,17 +61,19 @@ async function initWebcamWithEffects() {
         align-items: center;
     `;
 
-    // Add options button first to controls
+    // Create gear button
     const optionsButton = document.createElement('button');
-    optionsButton.innerText = '⚙️';
+    optionsButton.textContent = '⚙️';
     optionsButton.style.cssText = `
         background: none;
         border: none;
         color: #8b8b8b;
         cursor: pointer;
         font-size: 16px;
-        margin-right: 8px;
+        padding: 0 5px;
     `;
+    optionsButton.onmouseover = () => optionsButton.style.color = 'white';
+    optionsButton.onmouseout = () => optionsButton.style.color = '#8b8b8b';
     controls.appendChild(optionsButton);
 
     // Add window control buttons
@@ -209,59 +92,13 @@ async function initWebcamWithEffects() {
         button.onmouseover = () => button.style.color = 'white';
         button.onmouseout = () => button.style.color = '#8b8b8b';
 
-        button.onclick = () => {
-            if (i === 2) windowContainer.remove();  // Close
-            else if (i === 0) canvas.style.display = canvas.style.display === 'none' ? 'block' : 'none';  // Minimize
-            else if (i === 1) {  // Maximize
-                if (windowContainer.style.width === '100%') {
-                    windowContainer.style.width = '660px';
-                    windowContainer.style.height = 'auto';
-                    windowContainer.style.top = '50%';
-                    windowContainer.style.left = '50%';
-                    windowContainer.style.transform = 'translate(-50%, -50%)';
-                } else {
-                    windowContainer.style.width = '100%';
-                    windowContainer.style.height = '100%';
-                    windowContainer.style.top = '0';
-                    windowContainer.style.left = '0';
-                    windowContainer.style.transform = 'none';
-                }
-            }
-        };
+        if (i === 2) { // Close
+            button.onclick = () => windowContainer.remove();
+        }
         controls.appendChild(button);
     });
 
     titleBar.appendChild(controls);
-
-    // Make window draggable
-    let isDragging = false;
-    let currentX;
-    let currentY;
-    let initialX;
-    let initialY;
-
-    windowContainer.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        initialX = e.clientX - windowContainer.offsetLeft;
-        initialY = e.clientY - windowContainer.offsetTop;
-        windowContainer.style.cursor = 'ew-resize'; // Change cursor to arrow slider
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            e.preventDefault();
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
-            windowContainer.style.left = `${currentX}px`;
-            windowContainer.style.top = `${currentY}px`;
-            windowContainer.style.transform = 'none';
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        isDragging = false;
-        windowContainer.style.cursor = 'default'; // Reset cursor to default
-    });
 
     // Create content container for webcam
     const contentContainer = document.createElement('div');
@@ -278,296 +115,14 @@ async function initWebcamWithEffects() {
     canvas.width = 640;
     canvas.height = 640;
     canvas.style.display = 'block';
-    
-    // Make sure video is properly initialized
-    video.style.transform = 'scaleX(-1)';
-    video.style.display = 'none'; // Hide the video element
 
-    // Add elements to containers in correct order
+    video.style.transform = 'scaleX(-1)';
+    video.style.display = 'none';
+
+    // Add elements to containers
     contentContainer.appendChild(canvas);
     windowContainer.appendChild(titleBar);
     windowContainer.appendChild(contentContainer);
-
-    // Create options panel
-    const optionsPanel = document.createElement('div');
-    optionsPanel.style.cssText = `
-        position: absolute;
-        top: 30px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.8);
-        padding: 10px;
-        border: 1px solid #8b8b8b;
-        display: none;
-        z-index: 1000;
-    `;
-
-    // Add filter options
-    const filterSelect = document.createElement('select');
-    filterSelect.style.cssText = `
-        background: #000000;
-        color: #8b8b8b;
-        border: 1px solid #8b8b8b;
-        padding: 5px;
-        margin-bottom: 10px;
-        width: 100%;
-    `;
-    
-    Object.keys(ASCII_OPTIONS).forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option;
-        optionElement.text = option.charAt(0).toUpperCase() + option.slice(1);
-        if (option === 'alphanumeric') optionElement.selected = true;
-        filterSelect.appendChild(optionElement);
-    });
-
-    // Add font size slider
-    const fontSizeSlider = document.createElement('input');
-    fontSizeSlider.type = 'range';
-    fontSizeSlider.min = '8';
-    fontSizeSlider.max = '24';
-    fontSizeSlider.value = '12';
-    fontSizeSlider.style.cssText = `
-        width: 100%;
-        margin-bottom: 10px;
-    `;
-
-    const fontSizeLabel = document.createElement('div');
-    fontSizeLabel.innerText = 'Font Size: 12px';
-    fontSizeLabel.style.color = '#8b8b8b';
-
-    // Add elements to options panel
-    optionsPanel.appendChild(document.createTextNode('Filter Type:'));
-    optionsPanel.appendChild(filterSelect);
-    optionsPanel.appendChild(fontSizeLabel);
-    optionsPanel.appendChild(fontSizeSlider);
-
-    // Add options panel to window
-    titleBar.appendChild(optionsButton);
-    windowContainer.appendChild(optionsPanel);
-
-    // Toggle options panel
-    let optionsPanelVisible = false;
-    optionsButton.onclick = (e) => {
-        e.stopPropagation();
-        optionsPanelVisible = !optionsPanelVisible;
-        optionsPanel.style.display = optionsPanelVisible ? 'block' : 'none';
-    };
-
-    // Handle filter changes
-    filterSelect.onchange = (e) => {
-        currentAsciiChars = ASCII_OPTIONS[e.target.value];
-    };
-
-    // Handle font size changes
-    fontSizeSlider.oninput = (e) => {
-        const newSize = e.target.value;
-        fontSizeLabel.innerText = `Font Size: ${newSize}px`;
-        fontSize = parseInt(newSize);
-        charWidth = fontSize;
-        charHeight = fontSize;
-    };
-
-    // Initialize webcam
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: 640, height: 640 }
-        });
-        video.srcObject = stream;
-        await video.play();
-
-        // Update the processFrame function to use the current settings
-        function processFrame() {
-            // Clear the canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Flip the canvas context horizontally
-            ctx.save();
-            ctx.scale(-1, 1);
-            ctx.translate(-canvas.width, 0);
-
-            // Draw the video frame onto the canvas
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Restore the context to its original state
-            ctx.restore();
-
-            // Process the frame for ASCII art
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-
-            ctx.fillStyle = 'black';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Use the current fontSize
-            ctx.font = `${fontSize}px PPNeueMachina-InktrapLight`;
-            ctx.textBaseline = 'top';
-
-            for (let y = 0; y < canvas.height; y += charHeight) {
-                for (let x = 0; x < canvas.width; x += charWidth) {
-                    const pixelIndex = (y * canvas.width + x) * 4;
-                    const r = data[pixelIndex];
-                    const g = data[pixelIndex + 1];
-                    const b = data[pixelIndex + 2];
-
-                    const brightness = (r + g + b) / 3;
-                    const ascii = getAsciiCharacter(brightness);
-
-                    ctx.fillStyle = `rgb(${r},${g},${b})`;
-                    ctx.fillText(ascii, x, y);
-                }
-            }
-
-            requestAnimationFrame(processFrame);
-        }
-
-        processFrame();
-
-    } catch (err) {
-        console.error("Error accessing webcam:", err);
-    }
-
-    document.body.appendChild(windowContainer);
-
-    // Close options panel when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!optionsPanel.contains(e.target) && e.target !== optionsButton) {
-            optionsPanelVisible = false;
-            optionsPanel.style.display = 'none';
-        }
-    });
-}
-
-// Add the puzzle game function
-function createPuzzleGame() {
-    const windowContainer = document.createElement('div');
-    windowContainer.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 660px;
-        background: #000000;
-        border: 1px solid #8b8b8b;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        z-index: 999;
-    `;
-
-    const titleBar = document.createElement('div');
-    titleBar.style.cssText = `
-        padding: 8px;
-        background: #000000;
-        color: #8b8b8b;
-        font-family: 'PPNeueMachina-InktrapLight';
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: move;
-        user-select: none;
-    `;
-    titleBar.innerHTML = '<span>Puzzle Game</span>';
-
-    // Add window controls
-    const controls = document.createElement('div');
-    controls.style.cssText = `
-        display: flex;
-        gap: 8px;
-    `;
-
-    ['−', '□', '×'].forEach((text, i) => {
-        const button = document.createElement('button');
-        button.textContent = text;
-        button.style.cssText = `
-            background: none;
-            border: none;
-            color: #8b8b8b;
-            cursor: pointer;
-            font-family: 'PPNeueMachina-InktrapLight';
-            padding: 0 5px;
-            font-size: 16px;
-        `;
-        button.onmouseover = () => button.style.color = 'white';
-        button.onmouseout = () => button.style.color = '#8b8b8b';
-
-        button.onclick = () => {
-            if (i === 2) windowContainer.remove();  // Close
-            else if (i === 0) {  // Minimize
-                // Toggle puzzle container visibility instead of the whole window
-                puzzleContainer.style.display =
-                    puzzleContainer.style.display === 'none' ? 'grid' : 'none';
-            }
-            else if (i === 1) {  // Maximize
-                if (windowContainer.style.width === '100%') {
-                    windowContainer.style.width = '660px';
-                    windowContainer.style.height = 'auto';
-                    windowContainer.style.top = '50%';
-                    windowContainer.style.left = '50%';
-                    windowContainer.style.transform = 'translate(-50%, -50%)';
-                } else {
-                    windowContainer.style.width = '100%';
-                    windowContainer.style.height = '100%';
-                    windowContainer.style.top = '0';
-                    windowContainer.style.left = '0';
-                    windowContainer.style.transform = 'none';
-                }
-            }
-        };
-        controls.appendChild(button);
-    });
-
-    titleBar.appendChild(controls);
-
-    // Create puzzle container
-    const puzzleContainer = document.createElement('div');
-    puzzleContainer.style.cssText = `
-        width: 640px;
-        height: 640px;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2px;
-        padding: 10px;
-        background: #000000;
-    `;
-
-    let selectedTile = null;
-    for (let i = 0; i < 16; i++) {
-        const tile = document.createElement('div');
-        tile.style.cssText = `
-            background: #8b8b8b;
-            aspect-ratio: 1;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'PPNeueMachina-InktrapLight';
-            color: white;
-            border: 1px solid #000000;
-        `;
-
-        tile.textContent = i + 1;
-        tile.dataset.index = i;
-
-        tile.onclick = () => {
-            if (!selectedTile) {
-                selectedTile = tile;
-                tile.style.border = '1px solid white';
-            } else if (selectedTile === tile) {
-                selectedTile.style.border = '1px solid #000000';
-                selectedTile = null;
-            } else {
-                const tempText = selectedTile.textContent;
-                const tempIndex = selectedTile.dataset.index;
-                selectedTile.textContent = tile.textContent;
-                selectedTile.dataset.index = tile.dataset.index;
-                tile.textContent = tempText;
-                tile.dataset.index = tempIndex;
-
-                selectedTile.style.border = '1px solid #000000';
-                selectedTile = null;
-            }
-        };
-
-        puzzleContainer.appendChild(tile);
-    }
 
     // Make window draggable
     let isDragging = false;
@@ -597,9 +152,474 @@ function createPuzzleGame() {
         isDragging = false;
     });
 
-    windowContainer.appendChild(titleBar);
-    windowContainer.appendChild(puzzleContainer);
+    // Initialize webcam
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 640, height: 640 }
+        });
+        video.srcObject = stream;
+        await video.play();
+
+        // Process frame function
+        function processFrame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.translate(-canvas.width, 0);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = `${fontSize}px PPNeueMachina-InktrapLight`;
+            ctx.textBaseline = 'top';
+
+            for (let y = 0; y < canvas.height; y += charHeight) {
+                for (let x = 0; x < canvas.width; x += charWidth) {
+                    const pixelIndex = (y * canvas.width + x) * 4;
+                    const r = data[pixelIndex];
+                    const g = data[pixelIndex + 1];
+                    const b = data[pixelIndex + 2];
+                    const brightness = (r + g + b) / 3;
+                    const ascii = getAsciiCharacter(brightness);
+                    ctx.fillStyle = `rgb(${r},${g},${b})`;
+                    ctx.fillText(ascii, x, y);
+                }
+            }
+
+            requestAnimationFrame(processFrame);
+        }
+
+        processFrame();
+    } catch (err) {
+        console.error("Error accessing webcam:", err);
+    }
+
+    // Add the options window creation function
+    function createOptionsWindow() {
+        const optionsWindow = document.createElement('div');
+        optionsWindow.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background: #000000;
+            border: 1px solid #8b8b8b;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+        `;
+
+        // Create title bar for options window
+        const optionsTitleBar = document.createElement('div');
+        optionsTitleBar.style.cssText = `
+            padding: 8px;
+            background: #000000;
+            color: #8b8b8b;
+            font-family: 'PPNeueMachina-InktrapLight';
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+            user-select: none;
+        `;
+
+        // Add title
+        const optionsTitle = document.createElement('span');
+        optionsTitle.textContent = 'the ot[H]er side: config';
+        optionsTitleBar.appendChild(optionsTitle);
+
+        // Add window controls
+        const optionsControls = document.createElement('div');
+        optionsControls.style.cssText = `
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        `;
+
+        ['−', '□', '×'].forEach((text, i) => {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.style.cssText = `
+                background: none;
+                border: none;
+                color: #8b8b8b;
+                cursor: pointer;
+                font-family: 'PPNeueMachina-InktrapLight';
+                padding: 0 5px;
+                font-size: 16px;
+            `;
+            button.onmouseover = () => button.style.color = 'white';
+            button.onmouseout = () => button.style.color = '#8b8b8b';
+
+            if (i === 2) { // Close
+                button.onclick = () => optionsWindow.remove();
+            }
+            optionsControls.appendChild(button);
+        });
+
+        optionsTitleBar.appendChild(optionsControls);
+
+        // Create content container
+        const optionsContent = document.createElement('div');
+        optionsContent.style.cssText = `
+            padding: 20px;
+            background: #000000;
+        `;
+
+        // Add type label with consistent styling
+        const typeLabel = document.createElement('div');
+        typeLabel.innerText = 'type:';
+        typeLabel.style.cssText = `
+            color: #8b8b8b;
+            margin-bottom: 5px;
+            font-family: 'PPNeueMachina-InktrapLight';
+        `;
+
+        // Add filter options
+        const filterSelect = document.createElement('select');
+        filterSelect.style.cssText = `
+            background: #000000;
+            color: #8b8b8b;
+            border: 1px solid #8b8b8b;
+            padding: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+            font-family: 'PPNeueMachina-InktrapLight';
+        `;
+        
+        Object.keys(ASCII_OPTIONS).forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option;
+            optionElement.text = option.charAt(0).toUpperCase() + option.slice(1);
+            if (option === 'alphanumeric') optionElement.selected = true;
+            filterSelect.appendChild(optionElement);
+        });
+
+        // Add font size slider
+        const fontSizeLabel = document.createElement('div');
+        fontSizeLabel.innerText = 'scale: 12';
+        fontSizeLabel.style.cssText = `
+            color: #8b8b8b;
+            margin-bottom: 5px;
+            font-family: 'PPNeueMachina-InktrapLight';
+        `;
+
+        const fontSizeSlider = document.createElement('input');
+        fontSizeSlider.type = 'range';
+        fontSizeSlider.min = '8';
+        fontSizeSlider.max = '24';
+        fontSizeSlider.value = '12';
+        fontSizeSlider.style.cssText = `
+            width: 100%;
+            margin-bottom: 10px;
+            -webkit-appearance: none;
+            background: transparent;
+        `;
+
+        // Add custom slider styles
+        fontSizeSlider.innerHTML = `
+            <style>
+                input[type='range'] {
+                    pointer-events: auto;
+                }
+                input[type='range']::-webkit-slider-runnable-track {
+                    background: #8b8b8b;
+                    height: 2px;
+                    cursor: pointer;
+                }
+                input[type='range']::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    height: 12px;
+                    width: 12px;
+                    background: #ffffff;
+                    margin-top: -5px;
+                    cursor: pointer;
+                }
+                input[type='range']:focus {
+                    outline: none;
+                }
+                input[type='range']::-moz-range-track {
+                    background: #8b8b8b;
+                    height: 2px;
+                    cursor: pointer;
+                }
+                input[type='range']::-moz-range-thumb {
+                    height: 12px;
+                    width: 12px;
+                    background: #ffffff;
+                    border: none;
+                    cursor: pointer;
+                }
+            </style>
+        `;
+
+        // Add elements to options content
+        optionsContent.appendChild(typeLabel);
+        optionsContent.appendChild(filterSelect);
+        optionsContent.appendChild(fontSizeLabel);
+        optionsContent.appendChild(fontSizeSlider);
+
+        // Add everything to options window
+        optionsWindow.appendChild(optionsTitleBar);
+        optionsWindow.appendChild(optionsContent);
+
+        // Make window draggable
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+
+        optionsTitleBar.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            initialX = e.clientX - optionsWindow.offsetLeft;
+            initialY = e.clientY - optionsWindow.offsetTop;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                optionsWindow.style.left = `${currentX}px`;
+                optionsWindow.style.top = `${currentY}px`;
+                optionsWindow.style.transform = 'none';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Add event handlers
+        filterSelect.onchange = (e) => {
+            currentAsciiChars = ASCII_OPTIONS[e.target.value];
+        };
+
+        fontSizeSlider.oninput = (e) => {
+            const newSize = e.target.value;
+            fontSizeLabel.innerText = `scale: ${newSize}`;
+            fontSize = parseInt(newSize);
+            charWidth = fontSize;
+            charHeight = fontSize;
+        };
+
+        return optionsWindow;
+    }
+
+    // Modify the gear icon click handler
+    optionsButton.onclick = () => {
+        const existingOptions = document.querySelector('.options-window');
+        if (existingOptions) {
+            existingOptions.remove();
+            return;
+        }
+        const optionsWindow = createOptionsWindow();
+        optionsWindow.classList.add('options-window');
+        document.body.appendChild(optionsWindow);
+    };
+
     document.body.appendChild(windowContainer);
 }
-// Start the webcam with effects
-initWebcamWithEffects();
+
+// Add the puzzle game function
+function createPuzzleGame() {
+    const windowContainer = document.createElement('div');
+    windowContainer.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 660px;
+        background: #000000;
+        border: 1px solid #8b8b8b;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        z-index: 999;
+    `;
+
+    // Add title bar
+    const titleBar = document.createElement('div');
+    titleBar.style.cssText = `
+        padding: 8px;
+        background: #000000;
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move;
+        user-select: none;
+    `;
+    titleBar.innerHTML = '<span>in Free Fall</span>'; // 
+
+    const contentContainer = document.createElement('div');
+    contentContainer.style.cssText = `
+        padding: 10px;
+        background: #000000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    `;
+
+    // Create game grid container
+    const gridContainer = document.createElement('div');
+    gridContainer.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+        width: 640px;
+        height: 640px;
+        background: #8b8b8b;
+    `;
+ // Game state variables
+ let selectedTile = null;
+ let tiles = [];
+ const GRID_SIZE = 4;
+ const TILE_COUNT = GRID_SIZE * GRID_SIZE;
+
+ // Load and slice the image
+ const img = document.getElementById('puzzle-source');
+ if (!img.complete) {
+     // If image isn't loaded yet, wait for it
+     img.onload = initializePuzzle;
+ } else {
+     // If image is already loaded, initialize right away
+     initializePuzzle();
+ }
+
+ function initializePuzzle() {
+     const tileWidth = img.width / GRID_SIZE;
+     const tileHeight = img.height / GRID_SIZE;
+     
+     // Create tiles
+     for (let i = 0; i < TILE_COUNT; i++) {
+         const tile = document.createElement('div');
+         const x = (i % GRID_SIZE) * tileWidth;
+         const y = Math.floor(i / GRID_SIZE) * tileHeight;
+
+         tile.style.cssText = `
+             width: 100%;
+             height: 100%;
+             background-image: url('${img.src}');
+             background-position: -${x}px -${y}px;
+             background-size: ${img.width}px ${img.height}px;
+             cursor: pointer;
+             border: 1px solid #000000;
+         `;
+
+         tile.dataset.originalPosition = i;
+         tile.addEventListener('click', () => handleTileClick(tile));
+         tiles.push(tile);
+     }
+
+     // Shuffle tiles
+     shuffleTiles();
+
+     // Add tiles to grid
+     tiles.forEach(tile => gridContainer.appendChild(tile));
+ }
+
+ // Handle tile clicks
+ function handleTileClick(tile) {
+     if (!selectedTile) {
+         selectedTile = tile;
+         tile.style.border = '1px solid #ffffff';
+     } else {
+         // Swap tiles
+         const temp = selectedTile.style.backgroundPosition;
+         const tempOriginal = selectedTile.dataset.originalPosition;
+         
+         selectedTile.style.backgroundPosition = tile.style.backgroundPosition;
+         selectedTile.dataset.originalPosition = tile.dataset.originalPosition;
+         
+         tile.style.backgroundPosition = temp;
+         tile.dataset.originalPosition = tempOriginal;
+
+         // Reset selection
+         selectedTile.style.border = '1px solid #000000';
+         selectedTile = null;
+
+         // Check win condition
+         checkWin();
+     }
+ }
+
+ // Shuffle tiles
+ function shuffleTiles() {
+     for (let i = tiles.length - 1; i > 0; i--) {
+         const j = Math.floor(Math.random() * (i + 1));
+         const tempPos = tiles[i].style.backgroundPosition;
+         const tempOriginal = tiles[i].dataset.originalPosition;
+
+         tiles[i].style.backgroundPosition = tiles[j].style.backgroundPosition;
+         tiles[i].dataset.originalPosition = tiles[j].dataset.originalPosition;
+
+         tiles[j].style.backgroundPosition = tempPos;
+         tiles[j].dataset.originalPosition = tempOriginal;
+     }
+ }
+
+ // Check win condition
+ function checkWin() {
+     const isWin = tiles.every(tile => 
+         tile.dataset.originalPosition === tile.style.order);
+     
+     if (isWin) {
+         const winMessage = document.createElement('div');
+         winMessage.textContent = 'You Win!';
+         winMessage.style.cssText = `
+             color: #8b8b8b;
+             font-family: 'PPNeueMachina-InktrapLight';
+             font-size: 24px;
+             margin-top: 10px;
+         `;
+         contentContainer.appendChild(winMessage);
+     }
+ }
+
+ // Add shuffle button
+ const shuffleButton = document.createElement('button');
+ shuffleButton.textContent = 'Shuffle';
+ shuffleButton.style.cssText = `
+     background: none;
+     border: 1px solid #8b8b8b;
+     color: #8b8b8b;
+     padding: 5px 15px;
+     cursor: pointer;
+     font-family: 'PPNeueMachina-InktrapLight';
+ `;
+ shuffleButton.onclick = shuffleTiles;
+
+ // Add elements to containers
+ contentContainer.appendChild(gridContainer);
+ contentContainer.appendChild(shuffleButton);
+ windowContainer.appendChild(contentContainer);
+
+ // Add window to document
+ document.body.appendChild(windowContainer);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const button1 = document.querySelector('.button1');
+    const button5 = document.querySelector('.button5');
+    console.log('Found buttons:', button1, button5); // Debug log
+
+    if (button1) {
+        button1.addEventListener('click', () => {
+            console.log('Button1 clicked!'); // Debug log
+            createPuzzleGame(); // Directly call createPuzzleGame instead of creating another button
+        });
+    }
+
+    if (button5) {
+        button5.addEventListener('click', () => {
+            console.log('Button5 clicked!'); // Debug log
+            initWebcamWithEffects(); // This calls your existing webcam function
+        });
+    }
+});
