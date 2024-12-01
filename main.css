@@ -70,3 +70,14 @@ a {
     font-size: 1.1em;
 }
 
+.impossible-cube {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: transform 0.3s ease;
+}
+
+.impossible-cube:hover {
+    transform: translateX(-50%) scale(1.2);
+}
+

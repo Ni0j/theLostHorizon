@@ -123,8 +123,14 @@ async function initWebcamWithEffects() {
     // Create content container for webcam
     const contentContainer = document.createElement('div');
     contentContainer.style.cssText = `
-        padding: 10px;
+        padding: 20px;
         background: #000000;
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        line-height: 1.6;
+        height: 300px;
+        width: 620px;
+        overflow-y: auto;
     `;
 
     // Create webcam elements
@@ -888,12 +894,9 @@ function createWinningState() {
 document.addEventListener('DOMContentLoaded', () => {
     const button1 = document.querySelector('.button1');
     const button5 = document.querySelector('.button5');
-    console.log('Found buttons:', button1, button5); // Debug log
 
     if (button1) {
         button1.addEventListener('click', () => {
-            console.log('Button1 clicked!'); // Debug log
-            
             // Check if puzzle was recently solved
             const lastWinTime = localStorage.getItem('puzzleLastWin');
             if (lastWinTime && (Date.now() - parseInt(lastWinTime)) < 120000) { // 2 minutes
@@ -906,8 +909,1037 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (button5) {
         button5.addEventListener('click', () => {
-            console.log('Button5 clicked!'); // Debug log
             initWebcamWithEffects();
         });
     }
 });
+
+function createMusicPlayer() {
+    // Create window container
+    const windowContainer = document.createElement('div');
+    windowContainer.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        background: #000000;
+        border: 1px solid #8b8b8b;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        z-index: 9999;
+    `;
+
+    // Create title bar first
+    const titleBar = document.createElement('div');
+    titleBar.style.cssText = `
+        padding: 8px;
+        background: #000000;
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move;
+        user-select: none;
+    `;
+
+    // Create content container
+    const contentContainer = document.createElement('div');
+    contentContainer.style.cssText = `
+        padding: 20px;
+        background: #000000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    `;
+    
+
+    // Add title
+    const title = document.createElement('span');
+    title.textContent = 'Through the Tree[S]';
+    titleBar.appendChild(title);
+
+    // Add window controls
+    const controls = createWindowControls(windowContainer, contentContainer);
+    titleBar.appendChild(controls);
+
+    // Create and add music player elements
+    const playerContainer = document.createElement('div');
+    playerContainer.style.cssText = `
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    `;
+
+    // Create circle container
+    const circleContainer = document.createElement('div');
+    circleContainer.style.cssText = `
+        width: 300px;
+        height: 300px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    // Create controls container
+    const controlsContainer = document.createElement('div');
+    controlsContainer.style.cssText = `
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        z-index: 1;
+    `;
+
+    // Create audio context and analyzer
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const analyzer = audioContext.createAnalyser();
+    analyzer.fftSize = 256;
+    const bufferLength = analyzer.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    // Create audio element and setup
+    const audio = document.createElement('audio');
+    const audioSource = audioContext.createMediaElementSource(audio);
+    audioSource.connect(analyzer);
+    analyzer.connect(audioContext.destination);
+
+    // Update the playlist array
+    const playlist = [
+        { src: './img/Living in the Shadows.mp3', title: 'Living in the Shadows - Matthew Perryman Jones' },
+        { src: './img/Right Where It Belongs.mp3', title: 'Right Where It Belongs -  Nine Inch Nails' }
+    ];
+    let currentTrack = 0;
+
+    // Create track title display with scrolling
+    const trackTitle = document.createElement('div');
+    trackTitle.style.cssText = `
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        text-align: center;
+        margin-top: 10px;
+        width: 300px;
+        overflow: hidden;
+        white-space: nowrap;
+        padding: 5px;
+        background: #000000;
+    `;
+
+    // Create inner span for scrolling
+    const trackTitleText = document.createElement('span');
+    trackTitleText.style.cssText = `
+        display: inline-block;
+        white-space: nowrap;
+    `;
+
+    // Update the updateTrack function
+    function updateTrack() {
+        audio.src = playlist[currentTrack].src;
+        trackTitleText.textContent = playlist[currentTrack].title;
+        
+        trackTitleText.style.paddingLeft = '0';
+        
+        setTimeout(() => {
+            if (trackTitleText.offsetWidth > trackTitle.offsetWidth) {
+                trackTitleText.style.paddingLeft = '100%';
+                trackTitleText.style.animation = 'scroll-left 15s linear infinite';
+            } else {
+                trackTitleText.style.animation = 'none';
+                trackTitleText.style.transform = 'translateX(0)';
+            }
+        }, 100);
+    }
+
+    // Add the animation keyframes
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Make sure to append trackTitleText to trackTitle
+    trackTitle.appendChild(trackTitleText);
+
+    // Initialize first track
+    updateTrack();
+
+    // Create canvas for visualization
+    const canvas = document.createElement('canvas');
+    canvas.width = 300;
+    canvas.height = 300;
+    canvas.style.cssText = `
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        z-index: 0;
+    `;
+    
+    const ctx = canvas.getContext('2d');
+
+    // Animation function
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        analyzer.getByteFrequencyData(dataArray);
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Create circular mask but with larger radius to allow waves to extend
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, 170, 0, 2 * Math.PI); // Increased radius
+        ctx.clip();
+        
+        // Remove the base circle drawing
+        
+        // Draw sound waves with smoother transition
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        
+        ctx.beginPath();
+        for (let i = 0; i < bufferLength; i++) {
+            const amplitude = dataArray[i];
+            const normalized = amplitude / 255.0;
+            const angle = (i / bufferLength) * 2 * Math.PI;
+            
+            // Create gradient for smoother wave effect
+            const gradient = ctx.createLinearGradient(
+                centerX + Math.cos(angle) * 130,
+                centerY + Math.sin(angle) * 130,
+                centerX + Math.cos(angle) * (150 + normalized * 30), // Increased wave amplitude
+                centerY + Math.sin(angle) * (150 + normalized * 30)
+            );
+            
+            gradient.addColorStop(0, 'rgba(139, 139, 139, 0.4)'); // Added base opacity
+            gradient.addColorStop(1, `rgba(139, 139, 139, ${normalized})`);
+            
+            // Draw wave segment
+            ctx.beginPath();
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 2;
+            
+            // Create curved line for smoother appearance
+            const startRadius = 130;
+            const endRadius = 150 + normalized * 30; // Increased wave amplitude
+            
+            ctx.moveTo(
+                centerX + Math.cos(angle) * startRadius,
+                centerY + Math.sin(angle) * startRadius
+            );
+            
+            ctx.lineTo(
+                centerX + Math.cos(angle) * endRadius,
+                centerY + Math.sin(angle) * endRadius
+            );
+            
+            ctx.stroke();
+        }
+        
+        // Add glow effect
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = '#8b8b8b';
+        
+        ctx.restore();
+    }
+
+    // Create control buttons
+    ['⏮', '⏯', '⏭'].forEach((symbol, index) => {
+        const button = document.createElement('button');
+        button.textContent = symbol;
+        button.style.cssText = `
+            background: none;
+            border: none;
+            color: #8b8b8b;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+            transition: color 0.3s ease;
+        `;
+        
+        button.onmouseover = () => button.style.color = 'white';
+        button.onmouseout = () => button.style.color = '#8b8b8b';
+
+        button.onclick = async () => {
+            const playPauseButton = controlsContainer.children[1]; // Get reference to play/pause button
+            
+            switch(index) {
+                case 0: // Previous
+                    currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+                    updateTrack();
+                    audio.pause();
+                    playPauseButton.textContent = '⏯';
+                    break;
+                case 1: // Play/Pause
+                    if (audio.paused) {
+                        await audio.play();
+                        audioContext.resume();
+                        button.textContent = '⏸';
+                    } else {
+                        audio.pause();
+                        button.textContent = '⏯';
+                    }
+                    break;
+                case 2: // Next
+                    currentTrack = (currentTrack + 1) % playlist.length;
+                    updateTrack();
+                    audio.pause();
+                    playPauseButton.textContent = '⏯';
+                    break;
+            }
+        };
+
+        controlsContainer.appendChild(button);
+    });
+
+    // Start animation
+    animate();
+
+    // Assemble all elements in the correct order
+    circleContainer.appendChild(canvas);
+    circleContainer.appendChild(controlsContainer);
+    playerContainer.appendChild(circleContainer);
+    playerContainer.appendChild(trackTitle);
+    contentContainer.appendChild(playerContainer);
+
+    // Add elements to containers
+    windowContainer.appendChild(titleBar);
+    windowContainer.appendChild(contentContainer);
+
+    // Add dragging functionality
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+
+    titleBar.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        
+        // Remove the transform and set initial position
+        const rect = windowContainer.getBoundingClientRect();
+        windowContainer.style.transform = 'none';
+        windowContainer.style.left = `${rect.left}px`;
+        windowContainer.style.top = `${rect.top}px`;
+        
+        initialX = e.clientX - rect.left;
+        initialY = e.clientY - rect.top;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            
+            windowContainer.style.left = `${currentX}px`;
+            windowContainer.style.top = `${currentY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Finally, add to document
+    document.body.appendChild(windowContainer);
+}
+
+// Add helper function for creating window controls (since it's used in createMusicPlayer)
+function createWindowControls(windowContainer, contentContainer) {
+    const controls = document.createElement('div');
+    controls.style.cssText = `
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    `;
+
+    let originalHeight;
+
+    // Add window control buttons (toggle and close)
+    ['−', '×'].forEach((text, i) => {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.style.cssText = `
+            background: none;
+            border: none;
+            color: #8b8b8b;
+            cursor: pointer;
+            font-family: 'PPNeueMachina-InktrapLight';
+            padding: 0 5px;
+            font-size: 16px;
+        `;
+        button.onmouseover = () => button.style.color = 'white';
+        button.onmouseout = () => button.style.color = '#8b8b8b';
+
+        if (i === 0) { // Toggle button
+            originalHeight = windowContainer.offsetHeight;
+            button.onclick = () => {
+                if (contentContainer.style.display !== 'none') {
+                    contentContainer.style.display = 'none';
+                    windowContainer.style.height = 'auto';
+                    button.textContent = '□';
+                } else {
+                    contentContainer.style.display = 'block';
+                    windowContainer.style.height = originalHeight ? `${originalHeight}px` : 'auto';
+                    button.textContent = '−';
+                }
+            };
+        } else { // Close button
+            button.onclick = () => windowContainer.remove();
+        }
+        controls.appendChild(button);
+    });
+
+    return controls;
+}
+
+// Update event listener to use both class and id
+document.addEventListener('DOMContentLoaded', () => {
+    const button3 = document.querySelector('img.button3');
+    
+    if (button3) {
+        button3.addEventListener('click', () => {
+            createMusicPlayer();
+        });
+    }
+});
+
+function createLogWindow() {
+    const windowContainer = document.createElement('div');
+    windowContainer.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 660px;
+        background: #000000;
+        border: 1px solid #8b8b8b;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        z-index: 1000;
+    `;
+
+    // Create title bar
+    const titleBar = document.createElement('div');
+    titleBar.style.cssText = `
+        padding: 8px;
+        background: #000000;
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move;
+        user-select: none;
+    `;
+
+    // Add title
+    const title = document.createElement('span');
+    title.textContent = 'simula[T]or';
+    titleBar.appendChild(title);
+
+    // Add window controls
+    const controls = document.createElement('div');
+    controls.style.cssText = `
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    `;
+
+    let originalHeight;
+    ['−', '×'].forEach((text, i) => {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.style.cssText = `
+            background: none;
+            border: none;
+            color: #8b8b8b;
+            cursor: pointer;
+            font-family: 'PPNeueMachina-InktrapLight';
+            padding: 0 5px;
+            font-size: 16px;
+        `;
+        button.onmouseover = () => button.style.color = 'white';
+        button.onmouseout = () => button.style.color = '#8b8b8b';
+
+        if (i === 0) {
+            originalHeight = windowContainer.offsetHeight;
+            button.onclick = () => {
+                if (contentContainer.style.display !== 'none') {
+                    contentContainer.style.display = 'none';
+                    windowContainer.style.height = 'auto';
+                    button.textContent = '□';
+                } else {
+                    contentContainer.style.display = 'block';
+                    windowContainer.style.height = originalHeight ? `${originalHeight}px` : 'auto';
+                    button.textContent = '−';
+                }
+            };
+        } else {
+            button.onclick = () => windowContainer.remove();
+        }
+        controls.appendChild(button);
+    });
+
+    titleBar.appendChild(controls);
+
+    // Create content container
+    const contentContainer = document.createElement('div');
+    contentContainer.style.cssText = `
+        padding: 20px;
+        background: #000000;
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        line-height: 1.6;
+        height: 300px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    `;
+
+    // Create messages array
+    const messages = [
+        ">  Have you ever experienced this feeling?",
+        ">  Not knowing whether you are walking or flying?",
+        ">  In front of me, there are trees, a few mushrooms, and some stones, but I wonder, can I call that thing a stone?",
+        ">  There are also some unidentifiable objects.",
+        ">  Look at those soap bubble-like things. A steady stream of them, right there, off in the distance.",
+        ">  But how distant is the “distance”?",
+        ">  There is no land to stand on and nothing is certain.",
+        ">  Like fleeting thoughts that arise and disappear.",
+        ">  ... ",
+        ">  I've been studying them, and I can only study them because they are all that's in front of me.",
+        ">  I even tried to study myself by studying them, because I can't see myself, I don't even know if I can be considered to exist.",
+        ">  ... ",
+        ">  Waking up from a dream and having subtle clues that suggest you're in a larger dream, which is characterized by proliferation, looping and over-lapping.",
+        ">  It requires a strong lucidity to calibrate the world around, or else, we can be lost in both beautiful dreams and nightmares.",
+        ">  ... ",
+        ">  That's just the you in the present.",
+        ">  We are the you before and the you in the future, and we have something that the you now does not have.",
+        ">  The body.",
+        ">  The immortal body, as we are called, the Totem.",
+        ">  The body that you think you can feel now is a phantom in your head, your present existence is merely a floating, invisible body of consciousness.",
+        ">  ... ",
+    ];
+
+    let currentMessageIndex = 0;
+
+    // Add text content with typewriter effect
+    const textElement = document.createElement('div');
+    contentContainer.appendChild(textElement);
+
+    // Create arrow button with initial hidden state
+    const arrowButton = document.createElement('button');
+    arrowButton.innerHTML = '▼';
+    arrowButton.style.cssText = `
+        background: none;
+        border: none;
+        color: #8b8b8b;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 5px;
+        align-self: center;
+        transition: color 0.3s ease;
+        display: none;  // Initially hide the button
+    `;
+
+    arrowButton.onmouseover = () => arrowButton.style.color = 'white';
+    arrowButton.onmouseout = () => arrowButton.style.color = '#8b8b8b';
+
+    contentContainer.appendChild(arrowButton);
+
+    // Modified typewriter function to show button after text is complete
+    let index = 0;
+    function typeWriter() {
+        if (index < messages[currentMessageIndex].length) {
+            textElement.textContent += messages[currentMessageIndex].charAt(index);
+            index++;
+            setTimeout(typeWriter, 10);
+        } else {
+            // Show the button only after text is fully typed
+            arrowButton.style.display = 'block';
+        }
+    }
+
+    // Modified click handler to loop back to first message
+    arrowButton.onclick = () => {
+        currentMessageIndex = (currentMessageIndex + 1) % messages.length; // Loop back to 0 when reaching the end
+        textElement.textContent = '';
+        index = 0;
+        arrowButton.style.display = 'none';  // Hide button while typing new message
+        typeWriter();
+    };
+
+    typeWriter();
+
+    // Add dragging functionality
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+
+    titleBar.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        const rect = windowContainer.getBoundingClientRect();
+        windowContainer.style.transform = 'none';
+        windowContainer.style.left = `${rect.left}px`;
+        windowContainer.style.top = `${rect.top}px`;
+        initialX = e.clientX - rect.left;
+        initialY = e.clientY - rect.top;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            windowContainer.style.left = `${currentX}px`;
+            windowContainer.style.top = `${currentY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Assemble window
+    windowContainer.appendChild(titleBar);
+    windowContainer.appendChild(contentContainer);
+    document.body.appendChild(windowContainer);
+}
+
+// Update event listener
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing event listeners ...
+    
+    const button4 = document.querySelector('.button4');
+    if (button4) {
+        button4.addEventListener('click', createLogWindow);
+    }
+});
+
+function createAboutWindow() {
+    const windowContainer = document.createElement('div');
+    windowContainer.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 660px;
+        background: #000000;
+        border: 1px solid #8b8b8b;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        z-index: 1000;
+    `;
+
+    // Create title bar
+    const titleBar = document.createElement('div');
+    titleBar.style.cssText = `
+        padding: 8px;
+        background: #000000;
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: move;
+        user-select: none;
+    `;
+
+    // Add title
+    const title = document.createElement('span');
+    title.textContent = '*about';
+    titleBar.appendChild(title);
+
+    // Add window controls
+    const controls = document.createElement('div');
+    controls.style.cssText = `
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    `;
+
+    let originalHeight;
+    ['−', '×'].forEach((text, i) => {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.style.cssText = `
+            background: none;
+            border: none;
+            color: #8b8b8b;
+            cursor: pointer;
+            font-family: 'PPNeueMachina-InktrapLight';
+            padding: 0 5px;
+            font-size: 16px;
+        `;
+        button.onmouseover = () => button.style.color = 'white';
+        button.onmouseout = () => button.style.color = '#8b8b8b';
+
+        if (i === 0) {
+            originalHeight = windowContainer.offsetHeight;
+            button.onclick = () => {
+                if (contentContainer.style.display !== 'none') {
+                    contentContainer.style.display = 'none';
+                    windowContainer.style.height = 'auto';
+                    button.textContent = '□';
+                } else {
+                    contentContainer.style.display = 'block';
+                    windowContainer.style.height = originalHeight ? `${originalHeight}px` : 'auto';
+                    button.textContent = '−';
+                }
+            };
+        } else {
+            button.onclick = () => windowContainer.remove();
+        }
+        controls.appendChild(button);
+    });
+
+    titleBar.appendChild(controls);
+
+    // Create content container
+    const contentContainer = document.createElement('div');
+    contentContainer.style.cssText = `
+        padding: 20px;
+        background: #000000;
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        line-height: 1.6;
+        height: 300px;
+        width: 620px;
+        overflow-y: auto;
+        position: relative;
+    `;
+
+    // Create text element for typewriter effect
+    const textElement = document.createElement('div');
+    contentContainer.appendChild(textElement);
+
+    // Create signature div (initially hidden)
+    const signatureElement = document.createElement('div');
+    signatureElement.style.cssText = `
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        color: #8b8b8b;
+        font-family: 'PPNeueMachina-InktrapLight';
+        font-size: 14px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    `;
+    contentContainer.appendChild(signatureElement);
+
+    // The messages to type
+    const message = '>  "The [Lost H]orizon" is a project that explores how people perceive reality, hypothesizing that the world might be constructed from data and that everything is essentially a flow of information. It examines the boundary between real and unreal, questioning identity and existence in a data-driven world. The project uses diverse forms to prompt reflection on the authenticity of self and the world around us.';
+    const signature = '> by Nio Jin';
+
+    // Modified typewriter effect
+    let index = 0;
+    function typeWriter() {
+        if (index < message.length) {
+            textElement.textContent += message.charAt(index);
+            index++;
+            setTimeout(typeWriter, 10);
+        } else {
+            // After main text is done, start signature
+            signatureElement.textContent = signature;
+            signatureElement.style.opacity = '1';
+        }
+    }
+
+    // Start the typewriter effect
+    typeWriter();
+
+    // Add dragging functionality
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+
+    titleBar.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        const rect = windowContainer.getBoundingClientRect();
+        windowContainer.style.transform = 'none';
+        windowContainer.style.left = `${rect.left}px`;
+        windowContainer.style.top = `${rect.top}px`;
+        initialX = e.clientX - rect.left;
+        initialY = e.clientY - rect.top;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            windowContainer.style.left = `${currentX}px`;
+            windowContainer.style.top = `${currentY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Assemble window
+    windowContainer.appendChild(titleBar);
+    windowContainer.appendChild(contentContainer);
+    document.body.appendChild(windowContainer);
+}
+
+// Add click event listener for the morphing-shape element
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing event listeners ...
+    
+    const morphingShape = document.querySelector('.morphing-shape');
+    if (morphingShape) {
+        morphingShape.addEventListener('click', createAboutWindow);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing code ...
+
+    // Spaceship Integration
+    const button2 = document.getElementById('button2');
+    const homeBackground = document.getElementById('homeBackground');
+    const bgVideo = document.getElementById('bgVideo');
+    const spaceRoom = document.getElementById('spaceRoom');
+
+    // Toggle between home and spaceship views
+    button2.addEventListener('click', () => {
+        if (homeBackground.classList.contains('hidden')) {
+            // Switch to home view
+            homeBackground.classList.remove('hidden');
+            bgVideo.classList.add('hidden');
+            spaceRoom.classList.add('hidden');
+            bgVideo.pause(); // Pause the video when switching back
+        } else {
+            // Switch to spaceship view
+            homeBackground.classList.add('hidden');
+            bgVideo.classList.remove('hidden');
+            spaceRoom.classList.remove('hidden');
+            bgVideo.currentTime = 0; // Reset video to start
+            bgVideo.play(); // Start playing
+            initSpaceshipFeatures();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const walls = document.querySelectorAll('.wall');
+        const spaceView = document.getElementById('spaceView');
+        const floorText = document.getElementById('floorText');
+    
+        // Story text content
+        const storyTexts = [
+            "Writings of a L[O]NE Spaceman",
+            "Everything is moving fast,",
+            "At a single blink,",
+            "Gone is the days into the past,",
+            "All we have our choices to think,",
+            "In our decisions to trust,",
+            "Distracted by illusions we cast,",
+            "Illusions of purpose and freedom to last,",
+            "Every decision we make is another path, ", 
+            "Do you not see?",
+            "Everything hangs on the scale of choices, ",
+            "It’s just like zeroes and ones,",
+            "Like simple binary,",
+            "Our destinies coded into reality",
+            "To be or no to be , ",
+            "To exist or not,",
+            "To pursue answers beyond insanity, ",
+            "A choice to accept or reject,",
+            "The very existence of choice,",
+            "Dictates free will,",
+            "Or so we would believe and feel,",
+            "And pretend to be free,",
+            "But always end up,",
+            "Exactly where we are meant,",
+            "to be. ", 
+            "...",
+            "written by Phantom Poet",
+            "Mar 2022",
+            "21/M/La",
+            "Rochelle, France",
+    
+    
+            // Add more story segments as needed
+        ];
+    
+        let currentTextIndex = 0;
+    
+        // Typewriter settings
+        const typewriterConfig = {
+            speed: 30,        // Speed in milliseconds per character
+            cursorSpeed: 530  // Cursor blink speed in milliseconds
+        };
+    
+        // Function to create typewriter effect
+        function typeWriter(element, text, speed = typewriterConfig.speed) {
+            let i = 0;
+            element.textContent = '';
+            
+            // Create a container with more precise centering
+            const container = document.createElement('div');
+            container.style.cssText = `
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                width: 100%;
+                gap: 5px;
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+            `;
+            element.appendChild(container);
+            
+            // Create text span with explicit centering
+            const textSpan = document.createElement('span');
+            textSpan.style.cssText = `
+                text-align: center;
+                display: inline-block;
+            `;
+            container.appendChild(textSpan);
+            
+            const cursor = document.createElement('span');
+            cursor.textContent = '|';
+            cursor.className = 'type-cursor';
+            container.appendChild(cursor);
+
+            function type() {
+                if (i < text.length) {
+                    textSpan.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    cursor.remove();
+                    const arrow = document.createElement('span');
+                    arrow.textContent = '→';
+                    arrow.style.cssText = `
+                        cursor: pointer;
+                        margin-left: 5px;
+                        display: inline-block;
+                        vertical-align: middle;
+                        opacity: 0.8;
+                        transition: opacity 0.3s ease;
+                        position: relative;
+                    `;
+                    arrow.onmouseover = () => arrow.style.opacity = '1';
+                    arrow.onmouseout = () => arrow.style.opacity = '0.8';
+                    arrow.onclick = () => {
+                        currentTextIndex = (currentTextIndex + 1) % storyTexts.length;
+                        typeWriter(element, storyTexts[currentTextIndex]);
+                    };
+                    container.appendChild(arrow);
+                }
+            }
+            
+            type();
+        }
+    
+        function showNextText() {
+            currentTextIndex = (currentTextIndex + 1) % storyTexts.length;
+            typeWriter(floorText, storyTexts[currentTextIndex]);
+        }
+    
+        // Initialize with first text
+        typeWriter(floorText, storyTexts[0]);
+    
+    });
+});
+
+function initSpaceshipFeatures() {
+    const floorText = document.getElementById('floorText');
+
+    // Story text content - moved to a single location
+    const storyTexts = [
+        "Writings of a L[O]NE Spaceman",
+        "Everything is moving fast,",
+        "At a single blink,",
+        "Gone is the days into the past,",
+        "All we have our choices to think,",
+        "In our decisions to trust,",
+        "Distracted by illusions we cast,",
+        "Illusions of purpose and freedom to last,",
+        "Every decision we make is another path, ", 
+        "Do you not see?",
+        "Everything hangs on the scale of choices, ",
+        "It’s just like zeroes and ones,",
+        "Like simple binary,",
+        "Our destinies coded into reality",
+        "To be or no to be , ",
+        "To exist or not,",
+        "To pursue answers beyond insanity, ",
+        "A choice to accept or reject,",
+        "The very existence of choice,",
+        "Dictates free will,",
+        "Or so we would believe and feel,",
+        "And pretend to be free,",
+        "But always end up,",
+        "Exactly where we are meant,",
+        "to be. ", 
+        "written by Phantom Poet",
+        "Mar 2022",
+        "21/M/La",
+        "Rochelle, France",
+
+    ];
+
+    let currentTextIndex = 0;
+
+    // Typewriter settings
+    const typewriterConfig = {
+        speed: 30,
+        cursorSpeed: 530
+    };
+
+    function typeWriter(element, text, speed = typewriterConfig.speed) {
+        let i = 0;
+        element.textContent = '';
+        
+        const cursor = document.createElement('span');
+        cursor.textContent = '|';
+        cursor.className = 'type-cursor';
+        element.appendChild(cursor);
+
+        function type() {
+            if (i < text.length) {
+                cursor.insertAdjacentText('beforebegin', text.charAt(i));
+                i++;
+                setTimeout(type, speed);
+            } else {
+                cursor.remove();
+                const arrow = document.createElement('span');
+                arrow.textContent = '→';
+                arrow.style.cssText = `
+                    cursor: pointer;
+                    margin-left: 5px;
+                    display: inline-block;
+                    vertical-align: middle;
+                    opacity: 0.8;
+                    transition: opacity 0.3s ease;
+                `;
+                arrow.onmouseover = () => arrow.style.opacity = '1';
+                arrow.onmouseout = () => arrow.style.opacity = '0.8';
+                arrow.onclick = () => {
+                    currentTextIndex = (currentTextIndex + 1) % storyTexts.length;
+                    typeWriter(element, storyTexts[currentTextIndex]);
+                };
+                element.appendChild(arrow);
+            }
+        }
+        
+        type();
+    }
+
+    // Initialize with first text
+    typeWriter(floorText, storyTexts[0]);
+}

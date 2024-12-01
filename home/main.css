@@ -1,12 +1,12 @@
 @font-face {
-    font-family: 'YourFontName';
+    font-family: 'PPNeueMachina-InktrapLight';
     src: url('./PPNeueMachina-InktrapLight.otf') format('opentype');
 }
 
 body {
     background-color: black;
     color: white;
-    font-family: 'PPNeueMachina-InktrapLight.', monospace;
+    font-family: 'PPNeueMachina-InktrapLight', monospace;
     font-size: 16px;
 }
 
@@ -23,18 +23,32 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
-    overflow: hidden;
 }
 
-.background-container img {
+.background-container img,
+.background-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.background-video.hidden {
+    display: none !important;
+}
+
 .button1 {
     width: 3rem;
     height: 3rem;
@@ -91,3 +105,128 @@ body {
     cursor: pointer;
 }
 
+
+.morphing-shape {
+    width: 2rem;
+    height: 2rem;
+    background-color: #B1B1B1;
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: morphShape 3s infinite ease-in-out,  rotate 6s infinite linear;/* Added ease-in-out */
+    cursor: pointer; 
+}
+
+.morphing-shape:hover {
+    animation-play-state: paused;
+}
+
+@keyframes morphShape {
+    0%, 5% {
+        border-radius: 50%;  /* Circle */
+        clip-path: none;
+    }
+    30%, 35% {
+        border-radius: 0;    /* Square */
+        clip-path: none;
+    }
+    95%, 100% {
+        border-radius: 50%;  /* Back to Circle */
+        clip-path: none;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: translateX(-50%) rotate(0deg);
+    }
+    to {
+        transform: translateX(-50%) rotate(360deg);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Import spaceship styles */
+.space-room {
+    width: 100vw;
+    height: 100vh;
+    perspective: 1000px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Copy all relevant styles from spaceship/main.css */
+.window-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40vmin;
+    height: 40vmin;
+    border: 1px solid #fff;
+    overflow: hidden !important;
+    z-index: 1;
+}
+
+.window-view {
+    width: 150%;
+    height: 150%;
+    position: absolute;
+    top: -25%;
+    left: -25%;
+    object-fit: cover;
+    transform-origin: center;
+    animation: spaceRotate 120s linear infinite;
+}
+
+@keyframes spaceRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+#floorText {
+    position: fixed;
+    bottom: 10rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: transparent;
+    border: none;
+    min-height: 50px;
+    font-family: 'PPNeueMachina-InktrapLight';
+    white-space: pre-wrap;
+    text-align: center;
+    z-index: 1000;
+    color: #8b8b8b;
+    width: auto;
+    padding: 10px;
+}
+
+#floorText span {
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+#floorText span:hover {
+    transform: translateX(5px);
+}
+
+.type-cursor {
+    animation: blink 530ms infinite;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    49% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 0; }
+}
