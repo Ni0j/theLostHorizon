@@ -76,8 +76,11 @@ async function initWebcamWithEffects() {
     optionsButton.onmouseout = () => optionsButton.style.color = '#8b8b8b';
     controls.appendChild(optionsButton);
 
-    // Add window control buttons
-    ['−', '□', '×'].forEach((text, i) => {
+    // Store original window dimensions
+    let originalHeight;
+
+    // Add window control buttons (toggle and close)
+    ['−', '×'].forEach((text, i) => {
         const button = document.createElement('button');
         button.textContent = text;
         button.style.cssText = `
@@ -92,7 +95,24 @@ async function initWebcamWithEffects() {
         button.onmouseover = () => button.style.color = 'white';
         button.onmouseout = () => button.style.color = '#8b8b8b';
 
-        if (i === 2) { // Close
+        if (i === 0) { // Toggle button
+            // Store original height when window is created
+            originalHeight = windowContainer.offsetHeight;
+            
+            button.onclick = () => {
+                if (contentContainer.style.display !== 'none') {
+                    // Minimize
+                    contentContainer.style.display = 'none';
+                    windowContainer.style.height = 'auto';
+                    button.textContent = '□'; // Change to restore symbol
+                } else {
+                    // Restore to original size
+                    contentContainer.style.display = 'flex';
+                    windowContainer.style.height = originalHeight ? `${originalHeight}px` : 'auto';
+                    button.textContent = '−'; // Change back to minimize symbol
+                }
+            };
+        } else { // Close button
             button.onclick = () => windowContainer.remove();
         }
         controls.appendChild(button);
@@ -124,7 +144,7 @@ async function initWebcamWithEffects() {
     windowContainer.appendChild(titleBar);
     windowContainer.appendChild(contentContainer);
 
-    // Make window draggable
+    // Add simplified dragging logic
     let isDragging = false;
     let currentX;
     let currentY;
@@ -133,8 +153,15 @@ async function initWebcamWithEffects() {
 
     titleBar.addEventListener('mousedown', (e) => {
         isDragging = true;
-        initialX = e.clientX - windowContainer.offsetLeft;
-        initialY = e.clientY - windowContainer.offsetTop;
+        
+        // Remove the transform and set initial position
+        const rect = windowContainer.getBoundingClientRect();
+        windowContainer.style.transform = 'none';
+        windowContainer.style.left = `${rect.left}px`;
+        windowContainer.style.top = `${rect.top}px`;
+        
+        initialX = e.clientX - rect.left;
+        initialY = e.clientY - rect.top;
     });
 
     document.addEventListener('mousemove', (e) => {
@@ -142,9 +169,9 @@ async function initWebcamWithEffects() {
             e.preventDefault();
             currentX = e.clientX - initialX;
             currentY = e.clientY - initialY;
+            
             windowContainer.style.left = `${currentX}px`;
             windowContainer.style.top = `${currentY}px`;
-            windowContainer.style.transform = 'none';
         }
     });
 
@@ -227,6 +254,41 @@ async function initWebcamWithEffects() {
             user-select: none;
         `;
 
+        // Add simplified dragging logic
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+
+        optionsTitleBar.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            
+            // Remove the transform and set initial position
+            const rect = optionsWindow.getBoundingClientRect();
+            optionsWindow.style.transform = 'none';
+            optionsWindow.style.left = `${rect.left}px`;
+            optionsWindow.style.top = `${rect.top}px`;
+            
+            initialX = e.clientX - rect.left;
+            initialY = e.clientY - rect.top;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                
+                optionsWindow.style.left = `${currentX}px`;
+                optionsWindow.style.top = `${currentY}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
         // Add title
         const optionsTitle = document.createElement('span');
         optionsTitle.textContent = 'the ot[H]er side: config';
@@ -240,7 +302,10 @@ async function initWebcamWithEffects() {
             align-items: center;
         `;
 
-        ['−', '□', '×'].forEach((text, i) => {
+        let originalHeight;
+
+        // Add window control buttons (toggle and close)
+        ['−', '×'].forEach((text, i) => {
             const button = document.createElement('button');
             button.textContent = text;
             button.style.cssText = `
@@ -254,8 +319,25 @@ async function initWebcamWithEffects() {
             `;
             button.onmouseover = () => button.style.color = 'white';
             button.onmouseout = () => button.style.color = '#8b8b8b';
-
-            if (i === 2) { // Close
+    
+            if (i === 0) { // Toggle button
+                // Store original height when window is created
+                originalHeight = optionsWindow.offsetHeight;
+                
+                button.onclick = () => {
+                    if (optionsContent.style.display !== 'none') {
+                        // Minimize
+                        optionsContent.style.display = 'none';
+                        optionsWindow.style.height = 'auto';
+                        button.textContent = '□'; // Change to restore symbol
+                    } else {
+                        // Restore to original size
+                        optionsContent.style.display = 'block';
+                        optionsWindow.style.height = originalHeight ? `${originalHeight}px` : 'auto';
+                        button.textContent = '−'; // Change back to minimize symbol
+                    }
+                };
+            } else { // Close button
                 button.onclick = () => optionsWindow.remove();
             }
             optionsControls.appendChild(button);
@@ -263,7 +345,7 @@ async function initWebcamWithEffects() {
 
         optionsTitleBar.appendChild(optionsControls);
 
-        // Create content container
+        // Create content container with a specific class
         const optionsContent = document.createElement('div');
         optionsContent.style.cssText = `
             padding: 20px;
@@ -363,37 +445,9 @@ async function initWebcamWithEffects() {
         optionsContent.appendChild(fontSizeLabel);
         optionsContent.appendChild(fontSizeSlider);
 
-        // Add everything to options window
+        // Make sure to append both titleBar and content container in the correct order
         optionsWindow.appendChild(optionsTitleBar);
         optionsWindow.appendChild(optionsContent);
-
-        // Make window draggable
-        let isDragging = false;
-        let currentX;
-        let currentY;
-        let initialX;
-        let initialY;
-
-        optionsTitleBar.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            initialX = e.clientX - optionsWindow.offsetLeft;
-            initialY = e.clientY - optionsWindow.offsetTop;
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                e.preventDefault();
-                currentX = e.clientX - initialX;
-                currentY = e.clientY - initialY;
-                optionsWindow.style.left = `${currentX}px`;
-                optionsWindow.style.top = `${currentY}px`;
-                optionsWindow.style.transform = 'none';
-            }
-        });
-
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
 
         // Add event handlers
         filterSelect.onchange = (e) => {
@@ -428,20 +482,28 @@ async function initWebcamWithEffects() {
 
 // Add the puzzle game function
 function createPuzzleGame() {
+    // Check if puzzle was recently solved
+    const lastWinTime = localStorage.getItem('puzzleLastWin');
+    if (lastWinTime && (Date.now() - parseInt(lastWinTime)) < 120000) {
+        createWinningState();
+        return;
+    }
+
     const windowContainer = document.createElement('div');
     windowContainer.style.cssText = `
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 660px;
+        width: 800px;
         background: #000000;
         border: 1px solid #8b8b8b;
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
         z-index: 999;
+        margin-bottom: 1px;
     `;
 
-    // Add title bar
+    // Create title bar for puzzle window
     const titleBar = document.createElement('div');
     titleBar.style.cssText = `
         padding: 8px;
@@ -454,154 +516,373 @@ function createPuzzleGame() {
         cursor: move;
         user-select: none;
     `;
-    titleBar.innerHTML = '<span>in Free Fall</span>'; // 
 
+    // Add title
+    const title = document.createElement('span');
+    title.textContent = 'in Free Fal[L]';
+    titleBar.appendChild(title);
+
+    // Add window controls
+    const controls = document.createElement('div');
+    controls.style.cssText = `
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    `;
+
+    // Store original window dimensions
+    let originalHeight;
+
+    // Add window control buttons (toggle and close)
+    ['−', '×'].forEach((text, i) => {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.style.cssText = `
+            background: none;
+            border: none;
+            color: #8b8b8b;
+            cursor: pointer;
+            font-family: 'PPNeueMachina-InktrapLight';
+            padding: 0 5px;
+            font-size: 16px;
+        `;
+        button.onmouseover = () => button.style.color = 'white';
+        button.onmouseout = () => button.style.color = '#8b8b8b';
+
+        if (i === 0) { // Toggle button
+            // Store original height when window is created
+            originalHeight = windowContainer.offsetHeight;
+            
+            button.onclick = () => {
+                if (contentContainer.style.display !== 'none') {
+                    // Minimize
+                    contentContainer.style.display = 'none';
+                    windowContainer.style.height = 'auto';
+                    button.textContent = '□'; // Change to restore symbol
+                } else {
+                    // Restore to original size
+                    contentContainer.style.display = 'flex';
+                    windowContainer.style.height = originalHeight ? `${originalHeight}px` : 'auto';
+                    button.textContent = '−'; // Change back to minimize symbol
+                }
+            };
+        } else { // Close button
+            button.onclick = () => windowContainer.remove();
+        }
+        controls.appendChild(button);
+    });
+
+    titleBar.appendChild(controls);
+
+    // Create content container
     const contentContainer = document.createElement('div');
     contentContainer.style.cssText = `
-        padding: 10px;
         background: #000000;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 0.2rem;
+        height: calc(100% - 45px);
+        margin-top: 3rem;
+        margin-bottom: 3rem;
+        transition: all 0.3s ease;
     `;
 
-    // Create game grid container
+    // Make sure to append both titleBar and contentContainer to windowContainer
+    windowContainer.appendChild(titleBar);
+    windowContainer.appendChild(contentContainer);
+
+    // Simplified dragging logic
+    let isDragging = false;
+    let currentX;
+    let currentY;
+    let initialX;
+    let initialY;
+
+    titleBar.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        
+        // Remove the transform and set initial position
+        const rect = windowContainer.getBoundingClientRect();
+        windowContainer.style.transform = 'none';
+        windowContainer.style.left = `${rect.left}px`;
+        windowContainer.style.top = `${rect.top}px`;
+        
+        initialX = e.clientX - rect.left;
+        initialY = e.clientY - rect.top;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            
+            windowContainer.style.left = `${currentX}px`;
+            windowContainer.style.top = `${currentY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Create game grid container with proper aspect ratio
     const gridContainer = document.createElement('div');
     gridContainer.style.cssText = `
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 2px;
-        width: 640px;
-        height: 640px;
+        width: 720px;
+        height: 405px;
         background: #8b8b8b;
+        // margin: auto;
     `;
- // Game state variables
- let selectedTile = null;
- let tiles = [];
- const GRID_SIZE = 4;
- const TILE_COUNT = GRID_SIZE * GRID_SIZE;
 
- // Load and slice the image
- const img = document.getElementById('puzzle-source');
- if (!img.complete) {
-     // If image isn't loaded yet, wait for it
-     img.onload = initializePuzzle;
- } else {
-     // If image is already loaded, initialize right away
-     initializePuzzle();
- }
+    // Game state variables
+    let selectedTile = null;
+    let tiles = [];
+    const GRID_SIZE = 4;
+    const TILE_COUNT = GRID_SIZE * GRID_SIZE;
 
- function initializePuzzle() {
-     const tileWidth = img.width / GRID_SIZE;
-     const tileHeight = img.height / GRID_SIZE;
-     
-     // Create tiles
-     for (let i = 0; i < TILE_COUNT; i++) {
-         const tile = document.createElement('div');
-         const x = (i % GRID_SIZE) * tileWidth;
-         const y = Math.floor(i / GRID_SIZE) * tileHeight;
+    // Load and slice the image
+    const img = document.getElementById('puzzle-source');
+    if (!img.complete) {
+        // If image isn't loaded yet, wait for it
+        img.onload = initializePuzzle;
+    } else {
+        // If image is already loaded, initialize right away
+        initializePuzzle();
+    }
 
-         tile.style.cssText = `
-             width: 100%;
-             height: 100%;
-             background-image: url('${img.src}');
-             background-position: -${x}px -${y}px;
-             background-size: ${img.width}px ${img.height}px;
-             cursor: pointer;
-             border: 1px solid #000000;
-         `;
+    function initializePuzzle() {
+        // Clear the tiles array before creating new tiles
+        tiles = [];
+        
+        const tileWidth = img.width / GRID_SIZE;
+        const tileHeight = img.height / GRID_SIZE;
+        
+        // Calculate the scaled dimensions
+        const scaledWidth = 720;  // Match grid container width
+        const scaledHeight = 405; // Match grid container height
+        
+        // Create tiles
+        for (let i = 0; i < TILE_COUNT; i++) {
+            const tile = document.createElement('div');
+            const x = (i % GRID_SIZE) * tileWidth;
+            const y = Math.floor(i / GRID_SIZE) * tileHeight;
 
-         tile.dataset.originalPosition = i;
-         tile.addEventListener('click', () => handleTileClick(tile));
-         tiles.push(tile);
-     }
+            tile.style.cssText = `
+                width: 100%;
+                height: 100%;
+                background-image: url('${img.src}');
+                background-position: ${-(x * scaledWidth / img.width)}px ${-(y * scaledHeight / img.height)}px;
+                background-size: ${scaledWidth}px ${scaledHeight}px;
+                cursor: pointer;
+                border: 1px solid #000000;
+            `;
 
-     // Shuffle tiles
-     shuffleTiles();
+            tile.dataset.originalPosition = i;
+            tile.addEventListener('click', () => handleTileClick(tile));
+            tiles.push(tile);
+        }
 
-     // Add tiles to grid
-     tiles.forEach(tile => gridContainer.appendChild(tile));
- }
+        // Shuffle tiles
+        shuffleTiles();
 
- // Handle tile clicks
- function handleTileClick(tile) {
-     if (!selectedTile) {
-         selectedTile = tile;
-         tile.style.border = '1px solid #ffffff';
-     } else {
-         // Swap tiles
-         const temp = selectedTile.style.backgroundPosition;
-         const tempOriginal = selectedTile.dataset.originalPosition;
-         
-         selectedTile.style.backgroundPosition = tile.style.backgroundPosition;
-         selectedTile.dataset.originalPosition = tile.dataset.originalPosition;
-         
-         tile.style.backgroundPosition = temp;
-         tile.dataset.originalPosition = tempOriginal;
+        // Add tiles to grid
+        tiles.forEach(tile => gridContainer.appendChild(tile));
+    }
 
-         // Reset selection
-         selectedTile.style.border = '1px solid #000000';
-         selectedTile = null;
+    // Handle tile clicks
+    function handleTileClick(tile) {
+        if (!selectedTile) {
+            selectedTile = tile;
+            tile.style.border = '1px solid #ffffff';
+        } else {
+            // Swap tiles
+            const temp = selectedTile.style.backgroundPosition;
+            const tempOriginal = selectedTile.dataset.originalPosition;
+            
+            selectedTile.style.backgroundPosition = tile.style.backgroundPosition;
+            selectedTile.dataset.originalPosition = tile.dataset.originalPosition;
+            
+            tile.style.backgroundPosition = temp;
+            tile.dataset.originalPosition = tempOriginal;
 
-         // Check win condition
-         checkWin();
-     }
- }
+            // Reset selection
+            selectedTile.style.border = '1px solid #000000';
+            selectedTile = null;
 
- // Shuffle tiles
- function shuffleTiles() {
-     for (let i = tiles.length - 1; i > 0; i--) {
-         const j = Math.floor(Math.random() * (i + 1));
-         const tempPos = tiles[i].style.backgroundPosition;
-         const tempOriginal = tiles[i].dataset.originalPosition;
+            // Check win condition
+            checkWin();
+        }
+    }
 
-         tiles[i].style.backgroundPosition = tiles[j].style.backgroundPosition;
-         tiles[i].dataset.originalPosition = tiles[j].dataset.originalPosition;
+    // Shuffle tiles
+    function shuffleTiles() {
+        for (let i = tiles.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const tempPos = tiles[i].style.backgroundPosition;
+            const tempOriginal = tiles[i].dataset.originalPosition;
 
-         tiles[j].style.backgroundPosition = tempPos;
-         tiles[j].dataset.originalPosition = tempOriginal;
-     }
- }
+            tiles[i].style.backgroundPosition = tiles[j].style.backgroundPosition;
+            tiles[i].dataset.originalPosition = tiles[j].dataset.originalPosition;
 
- // Check win condition
- function checkWin() {
-     const isWin = tiles.every(tile => 
-         tile.dataset.originalPosition === tile.style.order);
-     
-     if (isWin) {
-         const winMessage = document.createElement('div');
-         winMessage.textContent = 'You Win!';
-         winMessage.style.cssText = `
-             color: #8b8b8b;
-             font-family: 'PPNeueMachina-InktrapLight';
-             font-size: 24px;
-             margin-top: 10px;
-         `;
-         contentContainer.appendChild(winMessage);
-     }
- }
+            tiles[j].style.backgroundPosition = tempPos;
+            tiles[j].dataset.originalPosition = tempOriginal;
+        }
+    }
 
- // Add shuffle button
- const shuffleButton = document.createElement('button');
- shuffleButton.textContent = 'Shuffle';
- shuffleButton.style.cssText = `
-     background: none;
-     border: 1px solid #8b8b8b;
-     color: #8b8b8b;
-     padding: 5px 15px;
-     cursor: pointer;
-     font-family: 'PPNeueMachina-InktrapLight';
- `;
- shuffleButton.onclick = shuffleTiles;
+    // Check win condition
+    function checkWin() {
+        const currentTiles = Array.from(gridContainer.children);
+        const isWin = currentTiles.every((tile, index) => {
+            return parseInt(tile.dataset.originalPosition) === index;
+        });
+        
+        if (isWin) {
+            // Store win time in localStorage
+            localStorage.setItem('puzzleLastWin', Date.now().toString());
 
- // Add elements to containers
- contentContainer.appendChild(gridContainer);
- contentContainer.appendChild(shuffleButton);
- windowContainer.appendChild(contentContainer);
+            gridContainer.style.display = 'block';
+            gridContainer.style.gridTemplateColumns = 'none';
+            
+            const fullImage = document.createElement('div');
+            fullImage.style.cssText = `
+                position: relative;
+                width: 100%;
+                height: 100%;
+                background-image: url('${img.src}');
+                background-size: cover;
+                background-position: center;
+                opacity: 0;
+                transition: all 1.5s ease;
+                animation: glowEffect 2s ease-in-out infinite;
+                pointer-events: none;
+            `;
 
- // Add window to document
- document.body.appendChild(windowContainer);
+            // Add glow animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes glowEffect {
+                    0% { box-shadow: 0 0 10px rgba(139, 139, 139, 0.5); }
+                    50% { box-shadow: 0 0 20px rgba(139, 139, 139, 0.8); }
+                    100% { box-shadow: 0 0 10px rgba(139, 139, 139, 0.5); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            gridContainer.innerHTML = '';
+            gridContainer.appendChild(fullImage);
+            
+            setTimeout(() => {
+                fullImage.style.opacity = '1';
+            }, 100);
+
+            // Add win message
+            const winMessage = document.createElement('div');
+            winMessage.textContent = 'Imagine you are falling. But there is no ground.';
+            winMessage.style.cssText = `
+                color: #8b8b8b;
+                font-family: 'PPNeueMachina-InktrapLight';
+                font-size: 1rem;
+                margin-top: 10px;
+               
+                opacity: 0;
+                transition: opacity 1s ease;
+                pointer-events: none;
+            `;
+            contentContainer.appendChild(winMessage);
+            
+            setTimeout(() => {
+                winMessage.style.opacity = '1';
+            }, 1000);
+
+            // Add restart button only after winning
+            const restartButton = document.createElement('button');
+            restartButton.textContent = 'Restart';
+            restartButton.style.cssText = `
+                background: none;
+                border: 1px solid #8b8b8b;
+                color: #8b8b8b;
+                padding: 5px 15px;
+                cursor: pointer;
+                font-family: 'PPNeueMachina-InktrapLight';
+                margin-top: 10px;
+                 margin-bottom: 10px;
+            `;
+            restartButton.onclick = () => {
+                localStorage.removeItem('puzzleLastWin');
+                winMessage.remove();
+                gridContainer.style.display = 'grid';
+                gridContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                gridContainer.innerHTML = '';
+                initializePuzzle();
+                restartButton.remove();
+            };
+            contentContainer.appendChild(restartButton);
+        }
+    }
+
+    // Add elements to containers
+    contentContainer.appendChild(gridContainer);
+    windowContainer.appendChild(contentContainer);
+
+    // Add window to document
+    document.body.appendChild(windowContainer);
+}
+
+// Add this new function
+function createWinningState() {
+    // Create and setup window container similar to createPuzzleGame
+    const windowContainer = document.createElement('div');
+    // ... (copy the window container setup code from createPuzzleGame) ...
+
+    // Setup the grid container with completed image
+    const gridContainer = document.createElement('div');
+    gridContainer.style.cssText = `
+        display: block;
+        width: 720px;
+        height: 405px;
+        background: #8b8b8b;
+        margin: auto;
+    `;
+
+    const fullImage = document.createElement('div');
+    fullImage.style.cssText = `
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-image: url('${img.src}');
+        background-size: cover;
+        background-position: center;
+        animation: glowEffect 2s ease-in-out infinite;
+    `;
+
+    gridContainer.appendChild(fullImage);
+    contentContainer.appendChild(gridContainer);
+
+    // Add restart button
+    const restartButton = document.createElement('button');
+    restartButton.textContent = 'Restart';
+    restartButton.style.cssText = `
+        background: none;
+        border: 1px solid #8b8b8b;
+        color: #8b8b8b;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-family: 'PPNeueMachina-InktrapLight';
+        margin-top: 10px;
+    `;
+    restartButton.onclick = () => {
+        localStorage.removeItem('puzzleLastWin');
+        windowContainer.remove();
+        createPuzzleGame();
+    };
+    contentContainer.appendChild(restartButton);
+
+    document.body.appendChild(windowContainer);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -612,14 +893,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (button1) {
         button1.addEventListener('click', () => {
             console.log('Button1 clicked!'); // Debug log
-            createPuzzleGame(); // Directly call createPuzzleGame instead of creating another button
+            
+            // Check if puzzle was recently solved
+            const lastWinTime = localStorage.getItem('puzzleLastWin');
+            if (lastWinTime && (Date.now() - parseInt(lastWinTime)) < 120000) { // 2 minutes
+                createWinningState(); // Show winning state
+            } else {
+                createPuzzleGame(); // Show puzzle game
+            }
         });
     }
 
     if (button5) {
         button5.addEventListener('click', () => {
             console.log('Button5 clicked!'); // Debug log
-            initWebcamWithEffects(); // This calls your existing webcam function
+            initWebcamWithEffects();
         });
     }
 });

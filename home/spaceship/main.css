@@ -1,0 +1,206 @@
+@font-face {
+    font-family: 'YourFontName';
+    src: url('./PPNeueMachina-InktrapLight.otf') format('opentype');
+}
+
+:root {
+    --room-size: 100vmin;
+    --wall-color: #1a1a1a;
+    --text-color: #F1F1F1;
+    --line-color: rgba(0, 255, 0, 0.2);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    font-size: 16px;
+}
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.space-room {
+    width: 100vw;
+    height: 100vh;
+    perspective: 1000px;
+    position: relative;
+}
+
+.room {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+/* Hide all walls except front */
+.wall {
+    display: none;
+}
+
+.wall-front {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* background: #000; */
+}
+
+.window-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40vmin;
+    height: 40vmin;
+    border: 1px solid #fff;
+    overflow: hidden !important; /* Changed to hidden to keep content inside */
+    z-index: 1;
+}
+
+.window-view {
+    width: 150%;
+    height: 150%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    object-fit: cover;
+    animation: spaceRotate 120s linear infinite;
+}
+
+.window-container::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: 
+        linear-gradient(45deg, #fff 0, #fff 2px, transparent 2px) no-repeat 0 0 / 200vmax 200vmax,
+        linear-gradient(-45deg, #fff 0, #fff 2px, transparent 2px) no-repeat 100% 0 / 200vmax 200vmax,
+        linear-gradient(135deg, #fff 0, #fff 2px, transparent 2px) no-repeat 0 100% / 200vmax 200vmax,
+        linear-gradient(-135deg, #fff 0, #fff 2px, transparent 2px) no-repeat 100% 100% / 200vmax 200vmax;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 1;
+}
+
+@keyframes spaceRotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+
+
+.floor-text {
+    position: fixed;
+    bottom: 10vh;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-color);
+    font-family: monospace;
+    font-size: 1em;
+    text-align: center;
+    white-space: pre-wrap;
+    z-index: 1000;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.button1 {
+    width: 3rem;
+    height: 3rem;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    cursor: pointer;
+}
+
+.button2 {
+    width: 5rem;
+    height: 3rem;
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.button2 img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+}
+
+.button2:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+
+.button3 {
+    width: 3rem;
+    height: 3rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    cursor: pointer;
+}
+.button4 {
+    width: 3rem;
+    height: 3rem;
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    cursor: pointer;
+}
+
+.button5 {
+    width: 3rem;
+    height: 3rem;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    cursor: pointer;
+}
+
+#floorText {
+    background: transparent;
+    border: none;
+    min-height: 50px;
+    font-family: monospace; /* For typewriter feel */
+    white-space: pre-wrap;
+}
+
+#floorText span {
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+#floorText span:hover {
+    transform: translateX(5px);
+}
+
+.type-cursor {
+    animation: blink 530ms infinite;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    49% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 0; }
+}
