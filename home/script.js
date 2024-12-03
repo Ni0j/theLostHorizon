@@ -50,7 +50,7 @@ async function initWebcamWithEffects() {
 
     // Add title
     const title = document.createElement('span');
-    title.textContent = 'the ot[H]er side';
+    addScrambleEffect(title, 'the ot[H]er side');
     titleBar.appendChild(title);
 
     // Add window controls
@@ -123,24 +123,33 @@ async function initWebcamWithEffects() {
     // Create content container for webcam
     const contentContainer = document.createElement('div');
     contentContainer.style.cssText = `
-        padding: 20px;
+        padding: 0;
         background: #000000;
         color: #8b8b8b;
         font-family: 'PPNeueMachina-InktrapLight';
         line-height: 1.6;
-        height: 300px;
-        width: 620px;
-        overflow-y: auto;
+        height: 640px;
+        width: 640px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        margin-bottom: 0.65rem
     `;
 
     // Create webcam elements
     const video = document.createElement('video');
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
     canvas.width = 640;
     canvas.height = 640;
-    canvas.style.display = 'block';
+    canvas.style.cssText = `
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+    `;
 
     video.style.transform = 'scaleX(-1)';
     video.style.display = 'none';
@@ -525,7 +534,7 @@ function createPuzzleGame() {
 
     // Add title
     const title = document.createElement('span');
-    title.textContent = 'in Free Fal[L]';
+    addScrambleEffect(title, 'in Free Fal[L]');
     titleBar.appendChild(title);
 
     // Add window controls
@@ -589,8 +598,8 @@ function createPuzzleGame() {
         align-items: center;
         gap: 0.2rem;
         height: calc(100% - 45px);
-        margin-top: 3rem;
-        margin-bottom: 3rem;
+        margin-top: 0.65rem;
+        margin-bottom: 1.65rem;
         transition: all 0.3s ease;
     `;
 
@@ -750,6 +759,8 @@ function createPuzzleGame() {
         if (isWin) {
             // Store win time in localStorage
             localStorage.setItem('puzzleLastWin', Date.now().toString());
+
+            contentContainer.style.marginBottom = '0.65rem';
 
             gridContainer.style.display = 'block';
             gridContainer.style.gridTemplateColumns = 'none';
@@ -956,7 +967,7 @@ function createMusicPlayer() {
 
     // Add title
     const title = document.createElement('span');
-    title.textContent = 'Through the Tree[S]';
+    addScrambleEffect(title, 'Through the Tree[S]');
     titleBar.appendChild(title);
 
     // Add window controls
@@ -1285,7 +1296,7 @@ function createWindowControls(windowContainer, contentContainer) {
                     windowContainer.style.height = 'auto';
                     button.textContent = '□';
                 } else {
-                    contentContainer.style.display = 'block';
+                    contentContainer.style.display = 'flex';
                     windowContainer.style.height = originalHeight ? `${originalHeight}px` : 'auto';
                     button.textContent = '−';
                 }
@@ -1340,7 +1351,7 @@ function createLogWindow() {
 
     // Add title
     const title = document.createElement('span');
-    title.textContent = 'simula[T]or';
+    addScrambleEffect(title, 'simula[T]or');
     titleBar.appendChild(title);
 
     // Add window controls
@@ -1375,7 +1386,7 @@ function createLogWindow() {
                     windowContainer.style.height = 'auto';
                     button.textContent = '□';
                 } else {
-                    contentContainer.style.display = 'block';
+                    contentContainer.style.display = 'flex';
                     windowContainer.style.height = originalHeight ? `${originalHeight}px` : 'auto';
                     button.textContent = '−';
                 }
@@ -1555,7 +1566,59 @@ function createAboutWindow() {
 
     // Add title
     const title = document.createElement('span');
-    title.textContent = '*about';
+    addScrambleEffect(title, '*about');
+    title.style.cursor = 'default'; // Add cursor style
+
+    // Create scramble effect function
+    function scrambleText(element, originalText) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}|;:,.<>?';
+        let iterations = 0;
+        const maxIterations = 10;
+        
+        const interval = setInterval(() => {
+            element.textContent = originalText
+                .split('')
+                .map((char, index) => {
+                    if (char === ' ') return char;
+                    if (iterations > index) return originalText[index];
+                    return characters[Math.floor(Math.random() * characters.length)];
+                })
+                .join('');
+            
+            iterations++;
+            
+            if (iterations >= maxIterations) {
+                clearInterval(interval);
+                element.textContent = originalText;
+            }
+        }, 50);
+    }
+
+    // Add hover events
+    let scrambleTimeout;
+    title.addEventListener('mouseenter', () => {
+        // Clear any existing timeout
+        if (scrambleTimeout) clearTimeout(scrambleTimeout);
+        
+        // Start scramble effect
+        scrambleText(title, '*about');
+        
+        // Set timeout to repeat effect
+        scrambleTimeout = setInterval(() => {
+            scrambleText(title, '*about');
+        }, 1000);
+    });
+
+    title.addEventListener('mouseleave', () => {
+        // Clear the interval when mouse leaves
+        if (scrambleTimeout) {
+            clearInterval(scrambleTimeout);
+            scrambleTimeout = null;
+        }
+        // Reset text
+        title.textContent = '*about';
+    });
+
     titleBar.appendChild(title);
 
     // Add window controls
@@ -1590,7 +1653,7 @@ function createAboutWindow() {
                     windowContainer.style.height = 'auto';
                     button.textContent = '□';
                 } else {
-                    contentContainer.style.display = 'block';
+                    contentContainer.style.display = 'flex';
                     windowContainer.style.height = originalHeight ? `${originalHeight}px` : 'auto';
                     button.textContent = '−';
                 }
@@ -1623,16 +1686,7 @@ function createAboutWindow() {
 
     // Create signature div (initially hidden)
     const signatureElement = document.createElement('div');
-    signatureElement.style.cssText = `
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        color: #8b8b8b;
-        font-family: 'PPNeueMachina-InktrapLight';
-        font-size: 14px;
-        opacity: 0;
-        transition: opacity 0.5s ease;
-    `;
+    addScrambleEffect(signatureElement, '> by Nio Jin');
     contentContainer.appendChild(signatureElement);
 
     // The messages to type
@@ -1942,4 +1996,54 @@ function initSpaceshipFeatures() {
 
     // Initialize with first text
     typeWriter(floorText, storyTexts[0]);
+}
+
+// Add this function at the top level of your code
+function addScrambleEffect(element, originalText) {
+    // Store original text in a data attribute
+    element.dataset.originalText = originalText;
+    element.textContent = originalText;
+    element.style.cursor = 'default';
+
+    let scrambleTimeout;
+
+    function scrambleText() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}|;:,.<>?';
+        let iterations = 0;
+        const maxIterations = 10;
+        
+        const interval = setInterval(() => {
+            element.textContent = originalText
+                .split('')
+                .map((char, index) => {
+                    if (char === ' ') return char;
+                    if (iterations > index) return originalText[index];
+                    return characters[Math.floor(Math.random() * characters.length)];
+                })
+                .join('');
+            
+            iterations++;
+            
+            if (iterations >= maxIterations) {
+                clearInterval(interval);
+                element.textContent = originalText;
+            }
+        }, 50);
+    }
+
+    element.addEventListener('mouseenter', () => {
+        if (scrambleTimeout) clearTimeout(scrambleTimeout);
+        scrambleText();
+        scrambleTimeout = setInterval(() => {
+            scrambleText();
+        }, 1000);
+    });
+
+    element.addEventListener('mouseleave', () => {
+        if (scrambleTimeout) {
+            clearInterval(scrambleTimeout);
+            scrambleTimeout = null;
+        }
+        element.textContent = element.dataset.originalText;
+    });
 }
