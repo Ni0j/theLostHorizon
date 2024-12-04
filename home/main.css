@@ -105,7 +105,7 @@ body {
     cursor: pointer;
 }
 
-
+/* 
 .morphing-shape {
     width: 2rem;
     height: 2rem;
@@ -114,7 +114,7 @@ body {
     bottom: 1rem;
     left: 50%;
     transform: translateX(-50%);
-    animation: morphShape 3s infinite ease-in-out,  rotate 6s infinite linear;/* Added ease-in-out */
+    animation: morphShape 3s infinite ease-in-out,  rotate 6s infinite linear;
     cursor: pointer; 
 }
 
@@ -124,15 +124,15 @@ body {
 
 @keyframes morphShape {
     0%, 5% {
-        border-radius: 50%;  /* Circle */
+        border-radius: 50%; 
         clip-path: none;
     }
     30%, 35% {
-        border-radius: 0;    /* Square */
+        border-radius: 0;   
         clip-path: none;
     }
     95%, 100% {
-        border-radius: 50%;  /* Back to Circle */
+        border-radius: 50%; 
         clip-path: none;
     }
 }
@@ -144,7 +144,7 @@ body {
     to {
         transform: translateX(-50%) rotate(360deg);
     }
-}
+} */
 
 .hidden {
     display: none !important;
@@ -229,4 +229,31 @@ body {
     49% { opacity: 1; }
     50% { opacity: 0; }
     100% { opacity: 0; }
+}
+
+
+.about-button {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer; 
+    animation: rotate 10s linear infinite;
+}
+
+.about-button:hover {
+    animation-play-state: paused;
+}
+
+.rotate-animation {
+    animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
