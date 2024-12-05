@@ -5,7 +5,7 @@
 
 body,* {
     /* background-color: black; */
-    color: white;
+    color: #8b8b8b;
     font-family: 'PPNeueMachina-InktrapLight', monospace;
     font-size: 16px;
     /* cursor: url('./img/cursor-01.png')16 16, auto; */
@@ -82,9 +82,6 @@ body,* {
     cursor: pointer;
 }
 
-.button2:hover {
-    transform: translateX(-50%) scale(1.1);
-}
 .button3 {
     width: 1.5rem;
     height: 1.5rem;
@@ -112,23 +109,23 @@ body,* {
 }
 
 .button1:hover {
-    transform: scale(1.1);
+    transform: scale(1.5);
 }
 
 .button2:hover {
-    transform: translateX(-50%) scale(1.1);
+    transform: translateX(-50%) scale(1.5);
 }
 
 .button3:hover {
-    transform: scale(1.1);
+    transform: scale(1.5);
 }
 
 .button4:hover {
-    transform: scale(1.1);
+    transform: scale(1.5);
 }
 
 .button5:hover {
-    transform: scale(1.1);
+    transform: scale(1.5);
 }
 
 /* 

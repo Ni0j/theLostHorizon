@@ -71,7 +71,7 @@ async function addVerificationPrompt() {
     const promptLine = document.createElement('div');
     promptLine.className = 'terminal-line';
     terminal.appendChild(promptLine);
-    await typeWriter(promptLine, 'Verification required. Please type the password:');
+    await typeWriter(promptLine, 'Verification required. Please enter the password:');
 
     const inputLine = document.createElement('div');
     inputLine.className = 'terminal-line';
@@ -111,11 +111,11 @@ async function addVerificationPrompt() {
             if (password.toLowerCase() === 'hints') {
                 // Display hints
                 const hints = [
-                    '*what is falling apart?',
-                    '*what keeps you up at night?',
-                    '*what haunts you the most?',
-                    '*what drives you insane?',
-                    '*what makes you feel alive?'
+                    '*what escapes the grasp of order?',
+                    '*what is bent by unseen forces?',
+                    '*what echoes in the breaks of sound?',
+                    '*what hides in plain sight?',
+                    '*what reveals itself when viewed from another angle?'
                 ];
                 
                 for (let hint of hints) {
@@ -139,7 +139,7 @@ async function addVerificationPrompt() {
                 const errorLine = document.createElement('div');
                 errorLine.className = 'terminal-line';
                 terminal.appendChild(errorLine);
-                await typeWriter(errorLine, 'Error.Type "hints" for help or try again.');
+                await typeWriter(errorLine, 'Error. Type "hints" for help or try again.');
                 
                 // Add new prompt after error
                 await addVerificationPrompt();

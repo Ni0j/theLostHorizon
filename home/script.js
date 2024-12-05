@@ -54,7 +54,7 @@ async function initWebcamWithEffects() {
 
     // Add title
     const title = document.createElement('span');
-    addScrambleEffect(title, 'the ot[H]er side');
+    addScrambleEffect(title, 'The Ot[H]er Side');
     titleBar.appendChild(title);
 
     // Add window controls
@@ -538,7 +538,7 @@ function createPuzzleGame() {
 
     // Add title
     const title = document.createElement('span');
-    addScrambleEffect(title, 'in Free Fal[L]');
+    addScrambleEffect(title, 'In Free Fal[L]');
     titleBar.appendChild(title);
 
     // Add window controls
@@ -717,7 +717,7 @@ function createPuzzleGame() {
     function handleTileClick(tile) {
         if (!selectedTile) {
             selectedTile = tile;
-            tile.style.border = '1px solid #ffffff';
+            tile.style.border = '1px solid #8b8b8b';
         } else {
             // Swap tiles
             const temp = selectedTile.style.backgroundPosition;
@@ -1355,7 +1355,7 @@ function createLogWindow() {
 
     // Add title
     const title = document.createElement('span');
-    addScrambleEffect(title, 'simula[T]or');
+    addScrambleEffect(title, 'Simula[T]or');
     titleBar.appendChild(title);
 
     // Add window controls
@@ -1570,7 +1570,7 @@ function createAboutWindow() {
 
     // Add title
     const title = document.createElement('span');
-    addScrambleEffect(title, '*about');
+    addScrambleEffect(title, 'About');
     title.style.cursor = 'default'; // Add cursor style
 
     // Create scramble effect function
@@ -1605,11 +1605,11 @@ function createAboutWindow() {
         if (scrambleTimeout) clearTimeout(scrambleTimeout);
         
         // Start scramble effect
-        scrambleText(title, '*about');
+        scrambleText(title, 'About');
         
         // Set timeout to repeat effect
         scrambleTimeout = setInterval(() => {
-            scrambleText(title, '*about');
+            scrambleText(title, 'About');
         }, 1000);
     });
 
@@ -1620,7 +1620,7 @@ function createAboutWindow() {
             scrambleTimeout = null;
         }
         // Reset text
-        title.textContent = '*about';
+        title.textContent = 'About';
     });
 
     titleBar.appendChild(title);
