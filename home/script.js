@@ -1764,30 +1764,52 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     // ... existing code ...
 
-    // Spaceship Integration
     const button2 = document.getElementById('button2');
     const homeBackground = document.getElementById('homeBackground');
     const bgVideo = document.getElementById('bgVideo');
+    const bgVideoReverse = document.getElementById('bgVideoReverse');
     const spaceRoom = document.getElementById('spaceRoom');
+    const windowContainer = document.querySelector('.window-container'); // Assuming this is the window container
 
-    // Toggle between home and spaceship views
+    let isSpaceshipMode = false;
+
     button2.addEventListener('click', () => {
-        if (homeBackground.classList.contains('hidden')) {
-            // Switch to home view
-            homeBackground.classList.remove('hidden');
-            bgVideo.classList.add('hidden');
-            spaceRoom.classList.add('hidden');
-            bgVideo.pause(); // Pause the video when switching back
-        } else {
+        if (!isSpaceshipMode) {
             // Switch to spaceship view
             homeBackground.classList.add('hidden');
             bgVideo.classList.remove('hidden');
+            bgVideoReverse.classList.add('hidden');
             spaceRoom.classList.remove('hidden');
-            bgVideo.currentTime = 0; // Reset video to start
-            bgVideo.play(); // Start playing
+            bgVideo.currentTime = 0;
+            bgVideo.play();
             initSpaceshipFeatures();
+        } else {
+            // Switch back to home view
+            bgVideo.classList.add('hidden');
+            bgVideoReverse.classList.remove('hidden');
+            bgVideoReverse.currentTime = 0;
+            bgVideoReverse.play();
+
+            bgVideoReverse.onended = () => {
+                // Fade out the window container
+                gsap.to(windowContainer, {
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        homeBackground.classList.remove('hidden');
+                        bgVideoReverse.classList.add('hidden');
+                        spaceRoom.classList.add('hidden');
+                        // Reset opacity for next time
+                        windowContainer.style.opacity = 1;
+                    }
+                });
+            };
         }
+        
+        isSpaceshipMode = !isSpaceshipMode;
     });
+
 
     document.addEventListener('DOMContentLoaded', () => {
         const walls = document.querySelectorAll('.wall');
