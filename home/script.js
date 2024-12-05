@@ -1456,9 +1456,9 @@ function createLogWindow() {
         background: none;
         border: none;
         color: #8b8b8b;
-        font-size: 20px;
+        font-size: 1.25rem;
         cursor: pointer;
-        padding: 5px;
+        padding: 0.3125rem;
         align-self: center;
         transition: color 0.3s ease;
         display: none;  // Initially hide the button
@@ -1547,17 +1547,17 @@ function createAboutWindow() {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 660px;
+        width: 41.25rem;
         background: #000000;
-        border: 1px solid #8b8b8b;
-        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        border: 0.0625rem solid #8b8b8b;
+        box-shadow: 0 0 0.625rem rgba(0,0,0,0.3);
         z-index: 1000;
     `;
 
     // Create title bar
     const titleBar = document.createElement('div');
     titleBar.style.cssText = `
-        padding: 8px;
+        padding: 0.5rem;
         background: #000000;
         color: #8b8b8b;
         font-family: 'PPNeueMachina-InktrapLight';
@@ -1570,7 +1570,7 @@ function createAboutWindow() {
 
     // Add title
     const title = document.createElement('span');
-    addScrambleEffect(title, 'About');
+    addScrambleEffect(title, './about');
     title.style.cursor = 'default'; // Add cursor style
 
     // Create scramble effect function
@@ -1605,11 +1605,11 @@ function createAboutWindow() {
         if (scrambleTimeout) clearTimeout(scrambleTimeout);
         
         // Start scramble effect
-        scrambleText(title, 'About');
+        scrambleText(title, './about');
         
         // Set timeout to repeat effect
         scrambleTimeout = setInterval(() => {
-            scrambleText(title, 'About');
+            scrambleText(title, './about');
         }, 1000);
     });
 
@@ -1620,7 +1620,7 @@ function createAboutWindow() {
             scrambleTimeout = null;
         }
         // Reset text
-        title.textContent = 'About';
+        title.textContent = './about';
     });
 
     titleBar.appendChild(title);
@@ -1629,7 +1629,7 @@ function createAboutWindow() {
     const controls = document.createElement('div');
     controls.style.cssText = `
         display: flex;
-        gap: 8px;
+        gap: 0.5rem;
         align-items: center;
     `;
 
@@ -1643,8 +1643,8 @@ function createAboutWindow() {
             color: #8b8b8b;
             cursor: pointer;
             font-family: 'PPNeueMachina-InktrapLight';
-            padding: 0 5px;
-            font-size: 16px;
+            padding: 0 0.3125rem;
+            font-size: 1rem;
         `;
         button.onmouseover = () => button.style.color = 'white';
         button.onmouseout = () => button.style.color = '#8b8b8b';
@@ -1694,7 +1694,7 @@ function createAboutWindow() {
     contentContainer.appendChild(signatureElement);
 
     // The messages to type
-    const message = '>  "The [Lost H]orizon" is a project that explores how people perceive reality, hypothesizing that the world might be constructed from data and that everything is essentially a flow of information. It examines the boundary between real and unreal, questioning identity and existence in a data-driven world. The project uses diverse forms to prompt reflection on the authenticity of self and the world around us.';
+    const message = '>  “The [Lost H]orizon” is a project that explores how people perceive reality, hypothesizing that the world might be constructed from data and that everything is essentially a flow of information. It examines the boundary between real and unreal, questioning identity and existence in a data-driven world. The project uses diverse forms to prompt reflection on the authenticity of self and the world around us.';
     const signature = '> by Nio Jin';
 
     // Modified typewriter effect
