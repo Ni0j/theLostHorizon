@@ -56,8 +56,8 @@ body,* {
 
 
 .button1 {
-    width: 3rem;
-    height: 3rem;
+    width: 1.5rem;
+    height: 1.5rem;
     position: absolute;
     top: 1rem;
     left: 1rem;
@@ -65,8 +65,8 @@ body,* {
 }
 
 .button2 {
-    width: 5rem;
-    height: 3rem;
+    width: 2.5rem;
+    height: 1.5rem;
     position: absolute;
     top: 1rem;
     left: 50%;
@@ -86,16 +86,16 @@ body,* {
     transform: translateX(-50%) scale(1.1);
 }
 .button3 {
-    width: 3rem;
-    height: 3rem;
+    width: 1.5rem;
+    height: 1.5rem;
     position: absolute;
     top: 1rem;
     right: 1rem;
     cursor: pointer;
 }
 .button4 {
-    width: 3rem;
-    height: 3rem;
+    width: 1.5rem;
+    height: 1.5rem;
     position: absolute;
     bottom: 1rem;
     left: 1rem;
@@ -103,8 +103,8 @@ body,* {
 }
 
 .button5 {
-    width: 3rem;
-    height: 3rem;
+    width: 1.5rem;
+    height: 1.5rem;
     position: absolute;
     bottom: 1rem;
     right: 1rem;
