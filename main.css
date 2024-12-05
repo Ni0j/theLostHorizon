@@ -5,9 +5,31 @@
 
 body {
     background-color: black;
-    color: white;
+    color: #8b8b8b;
     font-family: 'PPNeueMachina-InktrapLight.', monospace;
     font-size: 16px;
+    transition: transform 1s ease-in-out;
+    margin: 0;  /* Add this to ensure full-width animation */
+    overflow-x: hidden;  /* Prevent horizontal scrollbar during animation */
+}
+
+
+
+.slide-out {
+    transform: translateX(-100vw);  /* Use vw instead of % for better compatibility */
+}
+
+.slide-in {
+    animation: slideIn 1s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100vw);
+    }
+    to {
+        transform: translateX(0);
+    }
 }
 
 .terminal {
@@ -38,20 +60,20 @@ a {
 }
 
 .vscode-container {
-    border: 1px solid #fff;
+    border: 0.0625rem solid #fff;
     background-color: #0d1117;
-    border-radius: 6px;
+    border-radius: 0.375rem;
     width: 20%;
-    max-width: 300px;
+    max-width: 18.75rem;
     margin: 2rem auto;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.3);
 }
 
 .title-bar {
     background-color: #161b22;
-    padding: 8px 16px;
-    border-bottom: 1px solid #fff;
-    border-radius: 6px 6px 0 0;
+    padding: 0.5rem 1rem;
+    border-bottom: 0.0625rem solid #fff;
+    border-radius: 0.375rem 0.375rem 0 0;
 }
 
 .title-text {
@@ -60,8 +82,8 @@ a {
 }
 
 .editor-content {
-    padding: 16px;
-    min-height: 100px;
+    padding: 1rem;
+    min-height: 6.25rem;
 }
 
 .code-text {

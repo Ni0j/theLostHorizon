@@ -1,3 +1,7 @@
+window.addEventListener('load', () => {
+    document.body.classList.add('slide-in');
+});
+
 async function initWebcamWithEffects() {
     // Move these variables to the top level of the function so they're accessible everywhere
     let fontSize = 12;
