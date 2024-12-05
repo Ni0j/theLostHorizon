@@ -1548,7 +1548,7 @@ function createAboutWindow() {
         left: 50%;
         transform: translate(-50%, -50%);
         width: 41.25rem;
-        background: #000000;
+        background: #f1f1f1;
         border: 0.0625rem solid #8b8b8b;
         box-shadow: 0 0 0.625rem rgba(0,0,0,0.3);
         z-index: 1000;
@@ -1570,7 +1570,7 @@ function createAboutWindow() {
 
     // Add title
     const title = document.createElement('span');
-    addScrambleEffect(title, './about');
+    addScrambleEffect(title, '*.TXT');
     title.style.cursor = 'default'; // Add cursor style
 
     // Create scramble effect function
@@ -1605,11 +1605,11 @@ function createAboutWindow() {
         if (scrambleTimeout) clearTimeout(scrambleTimeout);
         
         // Start scramble effect
-        scrambleText(title, './about');
+        scrambleText(title, '*.TXT');
         
         // Set timeout to repeat effect
         scrambleTimeout = setInterval(() => {
-            scrambleText(title, './about');
+            scrambleText(title, '*.TXT');
         }, 1000);
     });
 
@@ -1620,7 +1620,7 @@ function createAboutWindow() {
             scrambleTimeout = null;
         }
         // Reset text
-        title.textContent = './about';
+        title.textContent = '*.TXT';
     });
 
     titleBar.appendChild(title);
@@ -1674,7 +1674,7 @@ function createAboutWindow() {
     const contentContainer = document.createElement('div');
     contentContainer.style.cssText = `
         padding: 20px;
-        background: #000000;
+        background: #f1f1f1;
         color: #8b8b8b;
         font-family: 'PPNeueMachina-InktrapLight';
         line-height: 1.6;
