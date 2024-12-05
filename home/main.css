@@ -3,12 +3,15 @@
     src: url('./PPNeueMachina-InktrapLight.otf') format('opentype');
 }
 
-body {
+body,* {
     background-color: black;
     color: white;
     font-family: 'PPNeueMachina-InktrapLight', monospace;
     font-size: 16px;
+    /* cursor: url('./img/cursor-01.png')16 16, auto; */
+    cursor: crosshair;
 }
+
 
 
 @keyframes fadeIn {
@@ -43,11 +46,14 @@ body {
     height: 100%;
     object-fit: cover;
     z-index: -1;
+    pointer-events: none;
 }
 
 .background-video.hidden {
     display: none !important;
 }
+
+
 
 .button1 {
     width: 3rem;
@@ -103,6 +109,26 @@ body {
     bottom: 1rem;
     right: 1rem;
     cursor: pointer;
+}
+
+.button1:hover {
+    transform: scale(1.1);
+}
+
+.button2:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+
+.button3:hover {
+    transform: scale(1.1);
+}
+
+.button4:hover {
+    transform: scale(1.1);
+}
+
+.button5:hover {
+    transform: scale(1.1);
 }
 
 /* 
@@ -168,7 +194,7 @@ body {
     transform: translate(-50%, -50%);
     width: 40vmin;
     height: 40vmin;
-    border: 1px solid #fff;
+    border: 1px solid #8b8b8b;
     overflow: hidden !important;
     z-index: 1;
 }
@@ -200,14 +226,14 @@ body {
     transform: translateX(-50%);
     background: transparent;
     border: none;
-    min-height: 50px;
+    min-height: 3.125rem;
     font-family: 'PPNeueMachina-InktrapLight';
     white-space: pre-wrap;
     text-align: center;
     z-index: 1000;
     color: #8b8b8b;
     width: auto;
-    padding: 10px;
+    padding: 0.625rem;
 }
 
 #floorText span {
@@ -216,7 +242,7 @@ body {
 }
 
 #floorText span:hover {
-    transform: translateX(5px);
+    transform: translateX(0.3125rem);
 }
 
 .type-cursor {
