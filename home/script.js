@@ -2073,3 +2073,60 @@ function addScrambleEffect(element, originalText) {
         element.textContent = element.dataset.originalText;
     });
 }
+function updateSystemInfo() {
+    const timeElement = document.querySelector('.time');
+    const dateElement = document.querySelector('.date');
+    const deviceElement = document.querySelector('.device');
+    const batteryElement = document.querySelector('.battery');
+
+    // Update time
+    function updateTime() {
+        const now = new Date();
+        timeElement.textContent = now.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit',
+        });
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Update date
+    const now = new Date();
+    dateElement.textContent = now.toLocaleDateString([], {
+        month: '2-digit',
+        day: '2-digit',
+        year: '2-digit'
+    });
+
+    // Update device name - simplified version
+    const userAgent = navigator.userAgent;
+    let deviceName = 'Unknown Device';
+    if (userAgent.includes('Windows')) deviceName = 'Windows';
+    else if (userAgent.includes('Mac')) deviceName = 'MacOS';
+    else if (userAgent.includes('Linux')) deviceName = 'Linux';
+    else if (userAgent.includes('iPhone')) deviceName = 'iPhone';
+    else if (userAgent.includes('Android')) deviceName = 'Android';
+    deviceElement.textContent = `Linked to ${deviceName}`;
+
+    // Update battery
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(battery => {
+            function updateBattery() {
+                batteryElement.textContent = `${Math.round(battery.level * 100)}%`;
+            }
+            battery.addEventListener('levelchange', updateBattery);
+            updateBattery();
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing code ...
+    
+    const aboutAsterisk = document.getElementById('aboutAsterisk');
+    if (aboutAsterisk) {
+        updateSystemInfo();
+        aboutAsterisk.addEventListener('click', createAboutWindow);
+    }
+});
