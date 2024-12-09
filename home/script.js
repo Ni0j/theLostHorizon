@@ -23,7 +23,7 @@ async function initWebcamWithEffects() {
         const index = Math.floor((brightness / 255) * (currentAsciiChars.length - 1));
         return currentAsciiChars[index];
     }
-
+    const borderWidth = window.devicePixelRatio > 1 ? '1.55px' : '1px';
     // Create window container for webcam
     const windowContainer = document.createElement('div');
     windowContainer.style.cssText = `
@@ -33,10 +33,14 @@ async function initWebcamWithEffects() {
         transform: translate(-50%, -50%);
         width: 660px;
         background: #000000;
-        border: 1px solid #8b8b8b;
+        border: ${borderWidth} solid #8b8b8b;
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
         z-index: 1000;
     `;
+  document.body.appendChild(windowContainer);
+ 
+    
+    document.body.appendChild(windowContainer); 
 
     // Create title bar for webcam window
     const titleBar = document.createElement('div');
