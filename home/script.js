@@ -1698,7 +1698,7 @@ function createAboutWindow() {
     contentContainer.appendChild(signatureElement);
 
     // The messages to type
-    const message = '>  “The [Lost H]orizon” is a project that explores how people perceive reality, hypothesizing that the world might be constructed from data and that everything is essentially a flow of information. It examines the boundary between real and unreal, questioning identity and existence in a data-driven world. The project uses diverse forms to prompt reflection on the authenticity of self and the world around us.';
+    const message = '>  “The [Lost H]orizon” is a project that delves into how people perceive reality, inspired by personal emotions and influential works such as The Truman Show and The Matrix. It hypothesizes that the world might not be real, instead proposing a bold idea: that everything we perceive is a construct of data, essentially coded entities. The project explores the boundary between the real and the unreal, questioning perspective, and the authenticity of the self in a data-driven world.';
     const signature = '> by Nio Jin';
 
     // Modified typewriter effect
