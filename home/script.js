@@ -807,7 +807,7 @@ function createPuzzleGame() {
 
             // Add win message
             const winMessage = document.createElement('div');
-            winMessage.textContent = 'Imagine you are falling. But there is no ground.';
+            winMessage.textContent = 'Hans Vredeman de Vries, plate in Perspective, 1604-1605.';
             winMessage.style.cssText = `
                 color: #8b8b8b;
                 font-family: 'PPNeueMachina-InktrapLight';

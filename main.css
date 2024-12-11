@@ -3,7 +3,7 @@
     src: url('./PPNeueMachina-InktrapLight.otf') format('opentype');
 }
 
-body {
+body,* {
     background-color: black;
     color: #8b8b8b;
     font-family: 'PPNeueMachina-InktrapLight.', monospace;
@@ -11,6 +11,7 @@ body {
     transition: transform 1s ease-in-out;
     margin: 0;  /* Add this to ensure full-width animation */
     overflow-x: hidden;  /* Prevent horizontal scrollbar during animation */
+    cursor: crosshair !important; 
 }
 
 
