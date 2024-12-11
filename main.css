@@ -3,7 +3,7 @@
     src: url('./PPNeueMachina-InktrapLight.otf') format('opentype');
 }
 
-body,* {
+body{
     background-color: black;
     color: #8b8b8b;
     font-family: 'PPNeueMachina-InktrapLight.', monospace;
