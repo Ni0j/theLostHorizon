@@ -18,7 +18,7 @@ body,* {
     from { opacity: 0; }
     to { opacity: 1; }
 }
-/* Add/update these styles */
+
 .background-container {
     position: fixed;
     top: 0;
@@ -131,47 +131,6 @@ body,* {
     transform: scale(1.5);
 }
 
-/* 
-.morphing-shape {
-    width: 2rem;
-    height: 2rem;
-    background-color: #B1B1B1;
-    position: fixed;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: morphShape 3s infinite ease-in-out,  rotate 6s infinite linear;
-    cursor: pointer; 
-}
-
-.morphing-shape:hover {
-    animation-play-state: paused;
-}
-
-@keyframes morphShape {
-    0%, 5% {
-        border-radius: 50%; 
-        clip-path: none;
-    }
-    30%, 35% {
-        border-radius: 0;   
-        clip-path: none;
-    }
-    95%, 100% {
-        border-radius: 50%; 
-        clip-path: none;
-    }
-}
-
-@keyframes rotate {
-    from {
-        transform: translateX(-50%) rotate(0deg);
-    }
-    to {
-        transform: translateX(-50%) rotate(360deg);
-    }
-} */
-
 .hidden {
     display: none !important;
 }
@@ -186,7 +145,6 @@ body,* {
     left: 0;
 }
 
-/* Copy all relevant styles from spaceship/main.css */
 .window-container {
     position: absolute;
     top: 50%;
@@ -292,12 +250,9 @@ body,* {
     padding: 0.5rem;
 }
 
-/* Add media queries for better responsiveness */
 
 
-/* .about-button:hover {
-    animation-play-state: paused;
-} */
+
 
 .rotate-animation {
     animation: rotate 10s linear infinite;

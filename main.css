@@ -9,15 +9,15 @@ body{
     font-family: 'PPNeueMachina-InktrapLight.', monospace;
     font-size: 16px;
     transition: transform 1s ease-in-out;
-    margin: 0;  /* Add this to ensure full-width animation */
-    overflow-x: hidden;  /* Prevent horizontal scrollbar during animation */
+    margin: 0;  
+    overflow-x: hidden;  
     cursor: crosshair !important; 
 }
 
 
 
 .slide-out {
-    transform: translateX(-100vw);  /* Use vw instead of % for better compatibility */
+    transform: translateX(-100vw);  
 }
 
 .slide-in {

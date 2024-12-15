@@ -3,7 +3,6 @@ window.addEventListener('load', () => {
 });
 
 async function initWebcamWithEffects() {
-    // Move these variables to the top level of the function so they're accessible everywhere
     let fontSize = 12;
     let charWidth = 12;
     let charHeight = 12;
@@ -1698,24 +1697,33 @@ function createAboutWindow() {
     contentContainer.appendChild(signatureElement);
 
     // The messages to type
-    const message = '>  “The [Lost H]orizon” is a project that delves into how people perceive reality, inspired by personal emotions and influential works such as The Truman Show and The Matrix. It hypothesizes that the world might not be real, instead proposing a bold idea: that everything we perceive is a construct of data, essentially coded entities. The project explores the boundary between the real and the unreal, questioning perspective, and the authenticity of the self in a data-driven world.';
+    const message1 = '>  “The [Lost H]orizon” is a project that delves into how people perceive reality, inspired by personal emotions and influential works such as The Truman Show and The Matrix. It hypothesizes that the world might not be real, instead proposing a bold idea: that everything we perceive is a construct of data, essentially coded entities. The project explores the boundary between the real and the unreal, questioning perspective, and the authenticity of the self in a data-driven world.'
+    const message2 = '>   The proper way to obtain the password is through the accompanying printouts. If you’ve made it here, it means you’ve likely read those files and are already informed about the context of this website. However, if you’ve acquired the password through other means, you may find the purpose of this site perplexing, as it is intended for those with prior knowledge. This space can be seen as a confidential repository for a secret investigator’s findings related to the subject—if you’re not part of the story, the details may seem elusive.';
     const signature = '> by Nio Jin';
 
-    // Modified typewriter effect
     let index = 0;
-    function typeWriter() {
-        if (index < message.length) {
-            textElement.textContent += message.charAt(index);
-            index++;
-            setTimeout(typeWriter, 10);
-        } else {
-            // After main text is done, start signature
-            signatureElement.textContent = signature;
-            signatureElement.style.opacity = '1';
-        }
-    }
+    let currentMessage = 1;
 
-    // Start the typewriter effect
+
+function typeWriter() {
+    const currentText = currentMessage === 1 ? message1 : message2;
+    
+    if (index < currentText.length) {
+        textElement.innerHTML += currentText.charAt(index);
+        index++;
+        setTimeout(typeWriter, 10);
+    } else if (currentMessage === 1) {
+        textElement.innerHTML += '<br>'; 
+        currentMessage = 2;
+        index = 0; // Reset index for second message
+        setTimeout(typeWriter, 500); // Small delay before starting second message
+    } else {
+        // Both messages complete, show signature
+        signatureElement.textContent = signature;
+        signatureElement.style.opacity = '1';
+    }
+}
+
     typeWriter();
 
     // Add dragging functionality

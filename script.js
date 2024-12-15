@@ -41,7 +41,7 @@ async function typeWriter(element, text) {
         // If the text contains a link, add it directly
         element.innerHTML = text;
     } else {
-        // For regular text, type it character by character
+        // type it character by character
         for (let char of text) {
             element.innerHTML += char;
             await new Promise(resolve => setTimeout(resolve, 10));
@@ -90,7 +90,7 @@ async function addVerificationPrompt() {
         margin-left: 0.3125rem;
     `;
 
-    // Add input event listener to check for "hints"
+    // input event listener to check for "hints"
     input.addEventListener('input', (e) => {
         if (input.value.toLowerCase() === 'hints') {
             input.type = 'text';  // Show text for "hints"
@@ -109,7 +109,7 @@ async function addVerificationPrompt() {
             input.value = '';
 
             if (password.toLowerCase() === 'hints') {
-                // Display hints
+                
                 const hints = [
                     '*what escapes the grasp of order?',
                     '*what is bent by unseen forces?',
